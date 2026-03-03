@@ -1,0 +1,23 @@
+---
+import { templates, type TemplateKey } from '@/config/templates';
+const { currentTemplate } = Astro.props as { currentTemplate: TemplateKey };
+---
+<label aria-label="Seleziona template" style="font-size:.9rem; color:var(--muted);">
+  Template
+  <select id="template-switcher" aria-label="Template switcher">
+    {Object.entries(templates).map(([key, template]) => (
+      <option value={key} selected={key === currentTemplate}>{template.label}</option>
+    ))}
+  </select>
+</label>
+<script is:inline>
+  const selector = document.getElementById('template-switcher');
+  const templateMap = { doctor: '/doctor', shop: '/shop', psy: '/psy' };
+  if (selector) {
+    selector.addEventListener('change', (event) => {
+      const template = event.target.value;
+      localStorage.setItem('preferred-template', template);
+      window.location.href = templateMap[template] ?? '/doctor';
+    });
+  }
+</script>

@@ -1,0 +1,51 @@
+---
+import '@/styles/global.css';
+import TemplateSwitcher from '@/components/TemplateSwitcher.astro';
+import SeoHead from '@/components/SeoHead.astro';
+import { templates, type TemplateKey } from '@/config/templates';
+
+const {
+  template,
+  title,
+  description,
+  nav = templates[template].nav,
+  footerText = 'Demo educativa, nessuna consulenza reale.',
+  footerHtml = ''
+} = Astro.props as {
+  template: TemplateKey;
+  title: string;
+  description: string;
+  nav?: { href: string; label: string }[];
+  footerText?: string;
+  footerHtml?: string;
+};
+
+const pathname = Astro.url.pathname;
+---
+<html lang="it" data-theme={template}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <SeoHead title={title} description={description} />
+  </head>
+  <body>
+    <header class="header">
+      <div class="container header-row">
+        <strong>{templates[template].label}</strong>
+        <nav class="nav" aria-label="Navigazione principale">
+          {nav.map((item) => (
+            <a href={item.href} class={pathname === item.href ? 'active' : ''}>{item.label}</a>
+          ))}
+        </nav>
+        <TemplateSwitcher currentTemplate={template} />
+      </div>
+    </header>
+    <main><slot /></main>
+    <footer class="footer">
+      <div class="container">
+        <p>{footerText}</p>
+        {footerHtml && <div set:html={footerHtml}></div>}
+      </div>
+    </footer>
+  </body>
+</html>

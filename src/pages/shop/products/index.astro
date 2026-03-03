@@ -1,0 +1,21 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import { products } from '@/data/products';
+import ProductCard from '@/components/ProductCard.astro';
+import { cartScript } from '@/utils/cart';
+import { shopFooterHtml } from '@/config/shop';
+---
+<MainLayout footerHtml={shopFooterHtml} template="shop" title="Prodotti | Lifestyle e Creme" description="Catalogo completo skincare demo.">
+  <section class="section container">
+    <h1>Catalogo prodotti</h1>
+    <div class="grid md-3">
+      {products.map((product) => <ProductCard product={product} />)}
+    </div>
+  </section>
+  <script is:inline set:html={cartScript}></script>
+  <script is:inline>
+    document.querySelectorAll('.add-to-cart').forEach((button) => {
+      button.addEventListener('click', () => window.shopCart.addToCart(JSON.parse(button.dataset.product)));
+    });
+  </script>
+</MainLayout>

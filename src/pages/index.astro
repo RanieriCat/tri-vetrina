@@ -1,0 +1,18 @@
+---
+---
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Tri Vetrina</title>
+  </head>
+  <body>
+    <p>Reindirizzamento in corso…</p>
+    <script is:inline>
+      const preferred = localStorage.getItem('preferred-template') || 'doctor';
+      const map = { doctor: '/doctor', shop: '/shop', psy: '/psy' };
+      window.location.replace(map[preferred] ?? '/doctor');
+    </script>
+    <noscript><a href="/doctor">Vai al sito demo</a></noscript>
+  </body>
+</html>

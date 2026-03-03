@@ -1,0 +1,21 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import { getCollection } from 'astro:content';
+
+const risorse = await getCollection('risorse');
+---
+<MainLayout template="psy" title="Risorse | Studio di Psicologia" description="Articoli brevi su benessere emotivo e autoconsapevolezza.">
+  <section class="section container">
+    <h1>Risorse</h1>
+    <div class="grid">
+      {risorse.map((item) => (
+        <article class="card">
+          <p style="color:var(--muted);">{item.data.date}</p>
+          <h2>{item.data.title}</h2>
+          <p>{item.data.excerpt}</p>
+          <p>{item.body}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+</MainLayout>
