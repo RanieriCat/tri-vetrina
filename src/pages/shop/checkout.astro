@@ -1,0 +1,61 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import { shopFooterHtml } from '@/config/shop';
+import { cartScript } from '@/utils/cart';
+---
+<MainLayout template="shop" title="Checkout | Lifestyle e Creme" description="Checkout mock in 3 step." footerHtml={shopFooterHtml}>
+  <section class="section container">
+    <h1>Checkout</h1>
+    <div id="step-shipping" class="card">
+      <h2>1. Dati spedizione</h2>
+      <form id="shipping-form" class="grid md-2">
+        <label>Nome <input required name="nome" /></label>
+        <label>Cognome <input required name="cognome" /></label>
+        <label>Indirizzo <input required name="indirizzo" /></label>
+        <label>Città <input required name="citta" /></label>
+        <label>CAP <input required name="cap" /></label>
+        <label>Telefono <input required name="telefono" /></label>
+        <button class="btn" type="submit">Continua</button>
+      </form>
+    </div>
+    <div id="step-review" class="card" hidden>
+      <h2>2. Riepilogo ordine</h2>
+      <div id="checkout-summary"></div>
+      <button class="btn" id="confirm-order">Conferma ordine</button>
+    </div>
+    <div id="step-confirm" class="card" hidden>
+      <h2>3. Conferma</h2>
+      <p>Grazie! Ordine demo registrato. Riceverai un'email di conferma (mock).</p>
+      <a class="btn" href="/shop/products">Torna ai prodotti</a>
+    </div>
+  </section>
+  <script is:inline set:html={cartScript}></script>
+  <script is:inline>
+    const shippingForm = document.getElementById('shipping-form');
+    const review = document.getElementById('step-review');
+    const confirm = document.getElementById('step-confirm');
+    const summary = document.getElementById('checkout-summary');
+
+    const renderSummary = () => {
+      const cart = window.shopCart.readCart();
+      const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+      summary.innerHTML = cart.length
+        ? `<ul>${cart.map((item) => `<li>${item.name} x ${item.qty} - € ${(item.price * item.qty).toFixed(2)}</li>`).join('')}</ul><p><strong>Totale € ${total.toFixed(2)}</strong></p>`
+        : '<p>Carrello vuoto. Aggiungi prodotti prima del checkout.</p>';
+    };
+
+    shippingForm?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!shippingForm.checkValidity()) return;
+      renderSummary();
+      review.hidden = false;
+      review.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    document.getElementById('confirm-order')?.addEventListener('click', () => {
+      window.shopCart.writeCart([]);
+      confirm.hidden = false;
+      confirm.scrollIntoView({ behavior: 'smooth' });
+    });
+  </script>
+</MainLayout>

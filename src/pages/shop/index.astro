@@ -1,0 +1,30 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import { products } from '@/data/products';
+import ProductCard from '@/components/ProductCard.astro';
+import { cartScript } from '@/utils/cart';
+import { shopFooterHtml } from '@/config/shop';
+const featured = products.slice(0, 4);
+---
+<MainLayout footerHtml={shopFooterHtml} template="shop" title="Lifestyle e Creme" description="Shop demo skincare naturale con checkout mock.">
+  <section class="hero container">
+    <h1>Routine skincare semplice, efficace, sensoriale.</h1>
+    <p>Scopri la nostra selezione di trattamenti viso e corpo con ingredienti bilanciati.</p>
+    <a class="btn" href="/shop/products">Esplora catalogo</a>
+  </section>
+  <section class="section container">
+    <h2>Best seller</h2>
+    <div class="grid md-4">
+      {featured.map((product) => <ProductCard product={product} />)}
+    </div>
+  </section>
+  <script is:inline set:html={cartScript}></script>
+  <script is:inline>
+    document.querySelectorAll('.add-to-cart').forEach((button) => {
+      button.addEventListener('click', () => {
+        window.shopCart.addToCart(JSON.parse(button.dataset.product));
+        alert('Prodotto aggiunto al carrello.');
+      });
+    });
+  </script>
+</MainLayout>

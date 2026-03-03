@@ -1,0 +1,54 @@
+---
+import MainLayout from '@/layouts/MainLayout.astro';
+import { shopFooterHtml } from '@/config/shop';
+import { cartScript } from '@/utils/cart';
+---
+<MainLayout template="shop" title="Carrello | Lifestyle e Creme" description="Gestisci il tuo carrello demo." footerHtml={shopFooterHtml}>
+  <section class="section container">
+    <h1>Carrello</h1>
+    <div id="cart-list" class="grid"></div>
+    <p id="cart-total" style="font-size:1.2rem;"></p>
+    <a class="btn" href="/shop/checkout">Vai al checkout</a>
+  </section>
+  <script is:inline set:html={cartScript}></script>
+  <script is:inline>
+    const container = document.getElementById('cart-list');
+    const totalEl = document.getElementById('cart-total');
+    const render = () => {
+      const cart = window.shopCart.readCart();
+      if (!cart.length) {
+        container.innerHTML = '<p class="card">Il carrello è vuoto.</p>';
+        totalEl.textContent = 'Totale: € 0,00';
+        return;
+      }
+      container.innerHTML = cart.map((item, index) => `
+        <article class="card" style="display:grid;grid-template-columns:1fr auto;gap:.8rem;align-items:center;">
+          <div><h3>${item.name}</h3><p>€ ${item.price.toFixed(2)} x ${item.qty}</p></div>
+          <div>
+            <button class="btn btn--ghost" data-dec="${index}">-</button>
+            <button class="btn btn--ghost" data-inc="${index}">+</button>
+            <button class="btn btn--ghost" data-rem="${index}">Rimuovi</button>
+          </div>
+        </article>`).join('');
+      const total = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+      totalEl.textContent = `Totale: € ${total.toFixed(2)}`;
+      container.querySelectorAll('[data-inc]').forEach((btn) => btn.onclick = () => update(btn.dataset.inc, 1));
+      container.querySelectorAll('[data-dec]').forEach((btn) => btn.onclick = () => update(btn.dataset.dec, -1));
+      container.querySelectorAll('[data-rem]').forEach((btn) => btn.onclick = () => removeItem(btn.dataset.rem));
+    };
+    const update = (index, delta) => {
+      const cart = window.shopCart.readCart();
+      cart[index].qty += delta;
+      if (cart[index].qty <= 0) cart.splice(index, 1);
+      window.shopCart.writeCart(cart);
+      render();
+    };
+    const removeItem = (index) => {
+      const cart = window.shopCart.readCart();
+      cart.splice(index, 1);
+      window.shopCart.writeCart(cart);
+      render();
+    };
+    render();
+  </script>
+</MainLayout>
