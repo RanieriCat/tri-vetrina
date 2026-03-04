@@ -40,18 +40,18 @@
 }
 
 :root[data-theme='doctor'] {
-  --text: #10223e;
-  --text-soft: #3d587f;
-  --bg: #eef3ff;
-  --bg-glow: rgba(66, 133, 244, 0.2);
-  --bg-glow-2: rgba(101, 170, 255, 0.15);
-  --surface: #ffffff;
-  --surface-2: #f7f9ff;
-  --border: #cdd8eb;
-  --focus-ring: #1f6fff;
-  --accent: #1768ff;
-  --accent-strong: #0f54d4;
-  --accent-soft: rgba(23, 104, 255, 0.12);
+  --text: #15263b;
+  --text-soft: #48617c;
+  --bg: #eef3f7;
+  --bg-glow: rgba(120, 156, 190, 0.16);
+  --bg-glow-2: rgba(186, 208, 228, 0.2);
+  --surface: #fbfdff;
+  --surface-2: #f3f7fb;
+  --border: #c8d6e4;
+  --focus-ring: #2f6ea8;
+  --accent: #2d6ca5;
+  --accent-strong: #245987;
+  --accent-soft: rgba(45, 108, 165, 0.14);
   --on-accent: #ffffff;
   --font-body: "Aptos", "Segoe UI", "Trebuchet MS", sans-serif;
   --font-heading: "Aptos Display", "Segoe UI", "Trebuchet MS", sans-serif;
@@ -109,11 +109,19 @@
 }
 
 :root[data-color-mode='dark'][data-theme='doctor'] {
-  --accent: #7db3ff;
-  --accent-strong: #5597ff;
-  --accent-soft: rgba(125, 179, 255, 0.2);
-  --on-accent: #001a42;
-  --focus-ring: #93beff;
+  --text: #e9f0f7;
+  --text-soft: #abc0d4;
+  --bg: #101821;
+  --bg-glow: rgba(95, 141, 184, 0.16);
+  --bg-glow-2: rgba(72, 108, 146, 0.11);
+  --surface: #172330;
+  --surface-2: #1f2e3d;
+  --border: #34475c;
+  --accent: #87b6e2;
+  --accent-strong: #6d9dcb;
+  --accent-soft: rgba(135, 182, 226, 0.2);
+  --on-accent: #0b233b;
+  --focus-ring: #a3c7e8;
 }
 
 :root[data-color-mode='dark'][data-theme='shop'] {
@@ -515,6 +523,208 @@ textarea {
   margin: 0;
   color: var(--text-soft);
   font-size: var(--fs-200);
+}
+
+.doctor-page {
+  display: grid;
+  gap: clamp(1.1rem, 2.8vw, 2rem);
+}
+
+.doctor-hero-section {
+  padding-top: clamp(2.8rem, 7vw, 4.5rem);
+}
+
+.doctor-trust-grid {
+  display: grid;
+  gap: var(--space-md);
+  align-items: stretch;
+}
+
+.doctor-hero-card {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.doctor-lede {
+  color: var(--text-soft);
+  font-size: clamp(1rem, 2.6vw, 1.24rem);
+  max-width: 52ch;
+}
+
+.doctor-kpi-row {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.58rem;
+}
+
+.doctor-kpi {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  padding: 0.68rem 0.78rem;
+}
+
+.doctor-kpi strong {
+  display: block;
+  margin-bottom: 0.14rem;
+}
+
+.doctor-kpi span {
+  color: var(--text-soft);
+  font-size: var(--fs-200);
+}
+
+.doctor-quick-contact {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.doctor-action-btn {
+  min-height: 2.9rem;
+}
+
+.doctor-note {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: var(--fs-200);
+}
+
+.doctor-hero-media {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.doctor-hero-media img {
+  width: 100%;
+  border-radius: var(--radius-md);
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.doctor-hero-badges {
+  display: grid;
+  gap: 0.48rem;
+}
+
+.doctor-hero-badges p {
+  margin: 0;
+  font-size: var(--fs-200);
+}
+
+.doctor-proof-strip {
+  margin-top: var(--space-md);
+}
+
+.doctor-proof-list {
+  display: grid;
+  gap: 0.38rem;
+}
+
+.doctor-proof-list p {
+  margin: 0;
+}
+
+.doctor-task-grid {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.doctor-task {
+  color: var(--text);
+  transition: border-color 260ms ease, box-shadow 280ms ease, transform 280ms ease;
+}
+
+.doctor-task p {
+  margin: 0;
+  color: var(--text-soft);
+}
+
+.doctor-calm-hover {
+  transition: border-color 280ms ease, box-shadow 280ms ease, transform 280ms ease;
+}
+
+.doctor-calm-hover:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent), var(--border) 54%);
+  box-shadow: 0 14px 30px rgba(26, 45, 68, 0.11);
+}
+
+.doctor-journey {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.doctor-journey-step {
+  margin-left: 0.2rem;
+}
+
+.doctor-journey-step p {
+  margin: 0;
+  color: var(--text-soft);
+}
+
+.doctor-ai-grid {
+  display: grid;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+.doctor-ai-grid ul {
+  margin: 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.doctor-clinical-grid {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.doctor-clinical-card dl {
+  margin: 0;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.doctor-clinical-card dt {
+  font-weight: 800;
+}
+
+.doctor-clinical-card dd {
+  margin: 0;
+  color: var(--text-soft);
+}
+
+.doctor-referti-grid {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.doctor-role-grid {
+  display: grid;
+  gap: var(--space-md);
+}
+
+.doctor-role-grid p {
+  margin: 0;
+  color: var(--text-soft);
+}
+
+.doctor-urgency ul {
+  margin: 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.doctor-booking-grid {
+  display: grid;
+  gap: var(--space-md);
 }
 
 .photo-hero {
@@ -1137,6 +1347,35 @@ textarea {
     grid-column: span 2;
     min-height: 14rem;
   }
+
+  .doctor-kpi-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .doctor-quick-contact {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .doctor-task-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .doctor-journey {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .doctor-referti-grid,
+  .doctor-clinical-grid,
+  .doctor-booking-grid,
+  .doctor-ai-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .doctor-role-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 960px) {
@@ -1159,6 +1398,18 @@ textarea {
 
   .hero-grid {
     grid-template-columns: 1.08fr 0.92fr;
+  }
+
+  .doctor-trust-grid {
+    grid-template-columns: 1.15fr 0.85fr;
+  }
+
+  .doctor-task-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .doctor-journey {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
   .photo-hero-content {

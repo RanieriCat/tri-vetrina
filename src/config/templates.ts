@@ -5,9 +5,11 @@ export const templates = {
     label: 'Vetrina Dottore',
     home: '/doctor',
     nav: [
-      { href: '/doctor#servizi', label: 'Servizi' },
       { href: '/doctor#prenota', label: 'Prenota' },
-      { href: '/doctor#contatti', label: 'Contatti' }
+      { href: '/doctor#specialista', label: 'Specialista' },
+      { href: '/doctor#referti', label: 'Referti' },
+      { href: '/doctor#televisita', label: 'Televisita' },
+      { href: '/doctor#urgenze', label: 'Urgenze' }
     ]
   },
   shop: {
