@@ -9,7 +9,7 @@ const { product } = Astro.props;
 
 const clips = [
   {
-    title: 'Texture test',
+    title: 'Test texture',
     duration: '12s',
     poster: 'https://images.pexels.com/videos/8996176/free-video-8996176.jpg?fit=crop&w=900&h=1600&auto=compress&cs=tinysrgb',
     source: 'https://videos.pexels.com/video-files/8996176/8996176-hd_1080_1920_25fps.mp4'
@@ -21,7 +21,7 @@ const clips = [
     source: 'https://videos.pexels.com/video-files/5927886/5927886-hd_1920_1080_25fps.mp4'
   },
   {
-    title: 'Prima / dopo',
+    title: 'Prima e dopo',
     duration: '22s',
     poster: 'https://images.pexels.com/videos/7305916/free-video-7305916.jpg?fit=crop&w=900&h=1600&auto=compress&cs=tinysrgb',
     source: 'https://videos.pexels.com/video-files/7305916/7305916-uhd_4096_2160_25fps.mp4'
@@ -34,7 +34,7 @@ const ugcItems = [
     skin: 'sensibile',
     tone: 'chiaro',
     finish: 'natural',
-    note: 'Texture leggera, assorbimento rapido in routine mattina.',
+    note: 'Texture leggera e assorbimento rapido nella routine del mattino.',
     image: 'https://images.pexels.com/photos/7143283/pexels-photo-7143283.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=900&h=1200'
   },
   {
@@ -42,7 +42,7 @@ const ugcItems = [
     skin: 'mista',
     tone: 'medio',
     finish: 'dewy',
-    note: 'Buon glow graduale in 2 settimane di uso costante (esperienza demo).',
+    note: 'Luminosita graduale in 2 settimane di utilizzo costante (esperienza demo).',
     image: 'https://images.pexels.com/photos/3851790/pexels-photo-3851790.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=900&h=1200'
   },
   {
@@ -50,7 +50,7 @@ const ugcItems = [
     skin: 'secca',
     tone: 'olivastro',
     finish: 'rich',
-    note: 'Comfort serale elevato, nessuna sensazione di pelle che tira.',
+    note: 'Comfort serale elevato senza sensazione di pelle che tira.',
     image: 'https://images.pexels.com/photos/3212179/pexels-photo-3212179.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=900&h=1200'
   },
   {
@@ -58,12 +58,12 @@ const ugcItems = [
     skin: 'sensibile',
     tone: 'medio',
     finish: 'light',
-    note: 'Ottima base prima del make-up, finish stabile.',
+    note: 'Buona base prima del make-up con finish stabile.',
     image: 'https://images.pexels.com/photos/6663374/pexels-photo-6663374.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=900&h=1200'
   }
 ];
 ---
-<MainLayout footerHtml={shopFooterHtml} template="shop" title={`${product.name} | Lifestyle & Beauty`} description={product.shortDescription}>
+<MainLayout footerHtml={shopFooterHtml} template="shop" title={`${product.name} | Lifestyle & Beauty`} description={`${product.shortDescription} Scopri dettagli formula, utilizzo e varianti.`}>
   <div class="shop-page">
     <section class="section container shop-pdp-top" data-reveal>
       <div class="shop-pdp-media-stack">
@@ -75,7 +75,7 @@ const ugcItems = [
               </video>
               <div class="shop-video-meta">
                 <p><strong>{clip.title}</strong> · {clip.duration}</p>
-                <button class="btn btn--ghost" type="button" data-pdp-add data-variant={`Clip ${index + 1}`}>Shop this clip</button>
+                <button class="btn btn--ghost" type="button" data-pdp-add data-variant={`Clip ${index + 1}`}>Acquista da questo clip</button>
               </div>
             </article>
           ))}
@@ -83,15 +83,15 @@ const ugcItems = [
 
         <article class="card shop-ugc-inline" data-reveal>
           <div class="shop-ugc-head">
-            <p class="eyebrow">UGC sopra la piega</p>
-            <h2>Filtra per tipo pelle, tone e finish</h2>
+            <p class="eyebrow">UGC in evidenza</p>
+            <h2>Filtra per tipo di pelle, tono e finitura</h2>
           </div>
 
           <div class="shop-ugc-filters" role="group" aria-label="Filtri UGC rapidi">
             <button class="btn btn--ghost" type="button" data-ugc-filter="all" aria-pressed="true" aria-controls="shop-ugc-grid">Tutti</button>
             <button class="btn btn--ghost" type="button" data-ugc-filter="sensibile" aria-pressed="false" aria-controls="shop-ugc-grid">Pelle sensibile</button>
-            <button class="btn btn--ghost" type="button" data-ugc-filter="dewy" aria-pressed="false" aria-controls="shop-ugc-grid">Finish dewy</button>
-            <button class="btn btn--ghost" type="button" data-ugc-filter="chiaro" aria-pressed="false" aria-controls="shop-ugc-grid">Tone chiaro</button>
+            <button class="btn btn--ghost" type="button" data-ugc-filter="dewy" aria-pressed="false" aria-controls="shop-ugc-grid">Finitura luminosa</button>
+            <button class="btn btn--ghost" type="button" data-ugc-filter="chiaro" aria-pressed="false" aria-controls="shop-ugc-grid">Tono chiaro</button>
           </div>
 
           <div class="shop-ugc-grid" id="shop-ugc-grid">
@@ -113,14 +113,14 @@ const ugcItems = [
         <p>{product.shortDescription}</p>
 
         <div class="shop-result-timing">
-          <p><strong>Risultati tipici (demo):</strong> texture percepita da subito, miglioramento comfort in 7-14 giorni di uso costante.</p>
-          <p class="muted">Tempistiche realistiche: i risultati variano in base a routine e tipo pelle.</p>
+          <p><strong>Risultati tipici (demo):</strong> sensazione di comfort immediata e miglioramento progressivo in 7-14 giorni di uso costante.</p>
+          <p class="muted">Tempistiche realistiche: i risultati variano in base a routine, costanza e tipo di pelle.</p>
         </div>
 
         <p><strong>EUR {product.price.toFixed(2)}</strong></p>
 
         <label for="detail-shade">
-          Variante / shade
+          Variante
           <select id="detail-shade" name="shade">
             <option value="Original">Original</option>
             <option value="Light">Light</option>
@@ -130,7 +130,7 @@ const ugcItems = [
 
         <div class="hero-actions">
           <button class="btn" id="detail-add" data-product={JSON.stringify(product)} type="button">Aggiungi al carrello</button>
-          <a class="btn btn--ghost" href="/shop/checkout">Checkout express</a>
+          <a class="btn btn--ghost" href="/shop/checkout">Vai al checkout</a>
         </div>
 
         <div class="shop-express-row" aria-label="Metodi pagamento express demo">
@@ -146,33 +146,33 @@ const ugcItems = [
 
     <section class="section container" data-reveal>
       <div class="section-head">
-        <p class="eyebrow">Clean lab transparency</p>
-        <h2>Ingredienti senza ansia</h2>
-        <p class="section-intro">Per ogni prodotto: cosa fa, per chi e cosa evitare. Badge sobri, niente parete di icone.</p>
+        <p class="eyebrow">Trasparenza formula</p>
+        <h2>Ingredienti spiegati in modo semplice</h2>
+        <p class="section-intro">Per ogni prodotto: funzione principale, destinatari e indicazioni di attenzione. Badge sobri, niente parete di icone.</p>
       </div>
 
       <div class="shop-cleanlab-grid">
         <article class="card" data-reveal>
           <h3>Cosa fa</h3>
           <p>{product.shortDescription}</p>
-          <p class="muted">Benefit principale orientato a comfort e routine quotidiana.</p>
+          <p class="muted">Beneficio principale orientato a comfort e continuita nella routine quotidiana.</p>
         </article>
 
         <article class="card" data-reveal>
           <h3>Per chi</h3>
           <ul>
-            <li>Pelli da normali a sensibili (verifica personale consigliata).</li>
-            <li>Routine mattina/sera con texture progressiva.</li>
-            <li>Chi cerca risultato graduale e non invasivo.</li>
+            <li>Pelli da normali a sensibili (consigliata verifica personale).</li>
+            <li>Routine mattina e sera con applicazione graduale.</li>
+            <li>Chi cerca un risultato progressivo e non invasivo.</li>
           </ul>
         </article>
 
         <article class="card" data-reveal>
           <h3>Cosa evitare / attenzione</h3>
           <ul>
-            <li>Controllare sempre INCI completo prima dell uso.</li>
-            <li>Patch test consigliato su pelle reattiva.</li>
-            <li>In gravidanza/allattamento, valutare con professionista se necessario.</li>
+            <li>Controllare sempre l INCI completo prima dell uso.</li>
+            <li>Su pelle reattiva e consigliato un patch test preliminare.</li>
+            <li>In gravidanza/allattamento, valutare con un professionista se necessario.</li>
           </ul>
         </article>
       </div>
@@ -186,19 +186,19 @@ const ugcItems = [
     <section class="section container" data-reveal>
       <div class="section-head">
         <p class="eyebrow">Prove e credibilita</p>
-        <h2>Claim con fonte e nota</h2>
+        <h2>Claim con fonte e contesto</h2>
       </div>
 
       <div class="shop-proof-grid">
         <article class="card" data-reveal>
-          <p><strong>Claim:</strong> Formula piu scelta per routine glow (dato demo).</p>
+          <p><strong>Claim:</strong> Tra le formule piu scelte per routine glow (dato demo).</p>
           <p><strong>Fonte:</strong> panel interno e-commerce demo.</p>
           <p class="muted">Nota: metrica non clinica, basata su acquisto e feedback utente.</p>
         </article>
         <article class="card" data-reveal>
           <p><strong>Claim:</strong> Buona tollerabilita percepita su pelle sensibile (dato demo).</p>
           <p><strong>Fonte:</strong> survey post-acquisto con filtri tipo pelle.</p>
-          <p class="muted">Nota: i risultati personali possono variare.</p>
+          <p class="muted">Nota: la risposta individuale puo variare.</p>
         </article>
       </div>
     </section>
@@ -249,7 +249,7 @@ const ugcItems = [
           window.shopCart.addToCart({ ...payload, variant: finalVariant });
           if (status) status.textContent = `${payload.name} · ${finalVariant} aggiunto al carrello (demo).`;
         } catch {
-          if (status) status.textContent = 'Errore nel caricamento del prodotto demo.';
+          if (status) status.textContent = 'Errore nel caricamento del prodotto.';
         }
       };
 

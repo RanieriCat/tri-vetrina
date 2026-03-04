@@ -8,14 +8,14 @@ import { shopFooterHtml } from '@/config/shop';
 const featured = products.slice(0, 6);
 const dropDateISO = '2026-04-30T20:00:00+02:00';
 ---
-<MainLayout footerHtml={shopFooterHtml} template="shop" title="Lifestyle & Beauty" description="Beauty shop demo con routine quiz, social bridge e discovery assistita.">
+<MainLayout footerHtml={shopFooterHtml} template="shop" title="Lifestyle & Beauty" description="Skincare guidata con quiz routine, consigli personalizzati e acquisto rapido.">
   <div class="shop-page">
     <section class="section container shop-bridge" data-reveal>
       <div class="shop-bridge-grid">
         <article class="shop-bridge-copy card">
           <p class="eyebrow">Lifestyle & Beauty</p>
-          <h1>Masstige beauty: look premium, acquisto rapido.</h1>
-          <p class="section-intro">Stesso visual dei contenuti social, CTA diretta e percorso guidato da routine invece di catalogo dispersivo.</p>
+          <h1>Skincare guidata, acquisto senza attrito.</h1>
+          <p class="section-intro">Dalla scoperta su social alla selezione prodotto in pochi passaggi: contenuti coerenti, scelta guidata e checkout semplice.</p>
 
           <ul class="shop-social-pills" aria-label="As seen on social">
             <li class="logo-pill logo-pill--social logo-pill--tiktok">
@@ -39,11 +39,11 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
           </ul>
 
           <div class="hero-actions">
-            <a class="btn" href="#routine-quiz">Find your routine</a>
+            <a class="btn" href="#routine-quiz">Trova la tua routine</a>
             <a class="btn btn--ghost" href="/shop/products">Vai al catalogo</a>
           </div>
 
-          <p class="shop-soft-proof" id="shop-proof-soft" aria-live="polite">Oggi XX persone hanno acquistato routine skincare (dato demo).</p>
+          <p class="shop-soft-proof" id="shop-proof-soft" aria-live="polite">Oggi XX persone hanno acquistato una routine skincare (dato demo).</p>
         </article>
 
         <article class="shop-bridge-media card" data-reveal>
@@ -61,7 +61,7 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
             </video>
             <div>
               <p><strong>Clip social 18s</strong></p>
-              <p class="muted">Texture test + applicazione reale, formato verticale shoppable.</p>
+              <p class="muted">Texture test e applicazione reale in formato verticale acquistabile.</p>
             </div>
           </div>
         </article>
@@ -70,9 +70,9 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
 
     <section id="routine-quiz" class="section container" data-reveal>
       <div class="section-head">
-        <p class="eyebrow">Find your routine</p>
-        <h2>Quiz guidato + raccomandazioni</h2>
-        <p class="section-intro">4 domande rapide: tipo pelle, obiettivo, texture e preferenze ingredienti. Output: routine mattina/sera, bundle e alternative.</p>
+        <p class="eyebrow">Routine guidata</p>
+        <h2>Quiz rapido con raccomandazioni utili</h2>
+        <p class="section-intro">Rispondi a 4 domande su pelle, obiettivo, texture e preferenze: ottieni routine mattina/sera, bundle e alternative.</p>
       </div>
 
       <div class="shop-quiz-grid">
@@ -108,9 +108,9 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
 
           <fieldset class="shop-checks" style="grid-column:1/-1;">
             <legend>Preferenze formula</legend>
-            <label><input type="checkbox" name="prefs" value="sensitive" /> Sensitive-friendly</label>
-            <label><input type="checkbox" name="prefs" value="vegan" /> Opzioni vegan-oriented</label>
-            <label><input type="checkbox" name="prefs" value="fragrance" /> Fragrance-free</label>
+            <label><input type="checkbox" name="prefs" value="sensitive" /> Pelle sensibile</label>
+            <label><input type="checkbox" name="prefs" value="vegan" /> Opzioni vegan</label>
+            <label><input type="checkbox" name="prefs" value="fragrance" /> Senza profumo</label>
           </fieldset>
 
           <button class="btn" type="submit">Genera routine</button>
@@ -118,17 +118,17 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
         </form>
 
         <aside id="shop-routine-result" class="card card--soft" aria-live="polite">
-          <h3>La tua routine comparira qui</h3>
-          <p class="muted">Compila il quiz per ottenere suggerimenti con massimo 3 prodotti per step e alternative su preferenze formula.</p>
+          <h3>La tua routine apparira qui</h3>
+          <p class="muted">Compila il quiz per ricevere una proposta con massimo 3 prodotti per step e varianti in base alle preferenze formula.</p>
         </aside>
       </div>
     </section>
 
     <section class="section container" data-reveal>
       <div class="section-head">
-        <p class="eyebrow">AI shopping assistant</p>
-        <h2>Conversazionale, ma controllato</h2>
-        <p class="section-intro">L assistente propone massimo 3 opzioni con motivazione. Preferenze ricordate localmente e passaggio a beauty advisor umano.</p>
+        <p class="eyebrow">Assistente guidato</p>
+        <h2>Consigli personalizzati, senza overload</h2>
+        <p class="section-intro">L assistente propone massimo 3 opzioni motivate, ricorda preferenze locali e consente il passaggio a beauty advisor umano.</p>
       </div>
 
       <div class="shop-ai-grid">
@@ -147,8 +147,8 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
             <select name="finish" required>
               <option value="">Seleziona finish</option>
               <option value="natural">Naturale</option>
-              <option value="dewy">Dewy</option>
-              <option value="light">Ultra light</option>
+              <option value="dewy">Luminoso</option>
+              <option value="light">Leggero</option>
             </select>
           </label>
           <label style="grid-column:1/-1;">
@@ -159,41 +159,41 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
             </select>
           </label>
           <button class="btn" type="submit">Suggerisci 3 opzioni</button>
-          <a class="btn btn--ghost" href="mailto:advisor@lifestylecreme.demo">Parla con beauty advisor</a>
+          <a class="btn btn--ghost" href="mailto:advisor@lifestylecreme.demo">Parla con una beauty advisor</a>
           <p id="shop-ai-status" class="wizard-status" aria-live="polite"></p>
         </form>
 
         <aside id="shop-ai-result" class="card card--soft" aria-live="polite">
           <h3>Proposte AI</h3>
-          <p class="muted">Seleziona i parametri per vedere opzioni motivate e coerenti col brand.</p>
+          <p class="muted">Seleziona i parametri per ricevere opzioni coerenti con il bisogno indicato.</p>
         </aside>
       </div>
     </section>
 
     <section class="section container" data-reveal>
       <div class="section-head">
-        <p class="eyebrow">Conversion messaging</p>
-        <h2>Prove credibili, urgenza soft</h2>
-        <p class="section-intro">Claim supportati da fonte e nota di contesto, senza countdown artificiale o promesse non verificabili.</p>
+        <p class="eyebrow">Messaggi di fiducia</p>
+        <h2>Prove credibili, urgenza misurata</h2>
+        <p class="section-intro">Claim con fonte e nota di contesto, senza countdown artificiali o promesse non verificabili.</p>
       </div>
 
       <div class="shop-proof-grid">
         <article class="card" data-reveal>
           <h3>Claim</h3>
-          <p>Piu scelto da pelle sensibile (dato demo).</p>
+          <p>Tra i piu scelti da clienti con pelle sensibile (dato demo).</p>
           <p><strong>Fonte:</strong> panel interno demo su 120 risposte.</p>
-          <p class="muted">Nota: risultato non clinico, percezione utente auto-riportata.</p>
+          <p class="muted">Nota: dato non clinico, percezione utente auto-riportata.</p>
         </article>
         <article class="card" data-reveal>
           <h3>Claim</h3>
           <p>Routine glow piu acquistata oggi (dato demo).</p>
           <p><strong>Fonte:</strong> analytics e-commerce demo giornata corrente.</p>
-          <p class="muted">Nota: il volume puo variare in base a promo e traffico.</p>
+          <p class="muted">Nota: il volume puo variare in base a promozioni e traffico.</p>
         </article>
         <article class="card" data-reveal>
           <h3>Claim</h3>
-          <p>Formula dermatologicamente testata solo dove indicato.</p>
-          <p><strong>Fonte:</strong> documentazione tecnica prodotto (placeholder).</p>
+          <p>Formula testata solo dove esplicitamente indicato.</p>
+          <p><strong>Fonte:</strong> documentazione tecnica prodotto (placeholder demo).</p>
           <p class="muted">Nota: badge mostrato solo con supporto documentale.</p>
         </article>
       </div>
@@ -201,8 +201,8 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
 
     <section class="section container" data-reveal>
       <div class="section-head">
-        <p class="eyebrow">Live shopping & drops</p>
-        <h2>Lancio bundle in diretta</h2>
+        <p class="eyebrow">Live e lanci</p>
+        <h2>Lancio routine con countdown reale</h2>
         <p class="section-intro">Countdown reale al prossimo drop, clip live/replay e set limitato con CTA dedicata.</p>
       </div>
 
@@ -210,7 +210,7 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
         <article class="card" data-reveal>
           <h3>Drop: Glow Routine Set</h3>
           <p id="shop-drop-countdown" class="shop-countdown" aria-live="polite">Calcolo countdown...</p>
-          <p class="muted">Se il live e concluso, trovi replay e acquisto set in un unico passaggio.</p>
+          <p class="muted">Se il live e concluso, trovi replay e acquisto set nello stesso flusso.</p>
           <div class="hero-actions">
             <a class="btn" href="/shop/products">Acquista la routine</a>
             <a class="btn btn--ghost" href="/shop/products">Guarda replay</a>
@@ -218,8 +218,8 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
         </article>
 
         <article class="card card--soft" data-reveal>
-          <h3>Checkout frictionless</h3>
-          <p>Express pay disponibile in checkout demo con tempi consegna e reso sempre visibili.</p>
+          <h3>Checkout senza attrito</h3>
+          <p>Express pay disponibile in checkout demo con tempi di consegna e reso sempre visibili.</p>
           <p><strong>Consegna:</strong> 48-72h demo | <strong>Reso:</strong> 30 giorni demo</p>
           <a class="btn btn--ghost" href="/shop/checkout">Vai al checkout</a>
         </article>
@@ -229,15 +229,15 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
     <section id="best-seller" class="section container" data-reveal>
       <div class="section-head">
         <p class="eyebrow">Best seller</p>
-        <h2>Packaging premium, funnel semplice</h2>
-        <p class="section-intro">Look editoriale + CTA chiare + policy spedizione/resi in prima linea.</p>
+        <h2>Estetica premium, percorso di acquisto chiaro</h2>
+        <p class="section-intro">Look editoriale, CTA leggibili e policy su spedizione/resi sempre in evidenza.</p>
       </div>
 
       <div class="grid md-3">
         {featured.map((product) => <ProductCard product={product} />)}
       </div>
 
-      <p class="shop-delivery-line">Spedizione demo 48-72h · Reso demo 30 giorni · Express pay disponibile in checkout.</p>
+      <p class="shop-delivery-line">Spedizione demo 48-72h · Reso demo 30 giorni · Express pay disponibile al checkout.</p>
       <p id="shop-feedback" class="wizard-status" aria-live="polite"></p>
     </section>
   </div>
@@ -277,14 +277,14 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
           window.shopCart.addToCart(payload);
           if (feedback) feedback.textContent = `${payload.name} aggiunto al carrello (demo).`;
         } catch {
-          if (feedback) feedback.textContent = 'Errore nel caricamento del prodotto demo.';
+          if (feedback) feedback.textContent = 'Errore nel caricamento del prodotto.';
         }
       });
 
       const proofEl = document.getElementById('shop-proof-soft');
       if (proofEl) {
         const dynamicCount = 24 + new Date().getHours() * 3;
-        proofEl.textContent = `Oggi ${dynamicCount}+ persone hanno acquistato una routine (dato demo).`;
+        proofEl.textContent = `Oggi ${dynamicCount}+ persone hanno scelto una routine skincare (dato demo).`;
       }
 
       const routineForm = document.getElementById('shop-routine-form');
@@ -329,9 +329,9 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
 
       const renderAlternatives = (alternatives) => {
         const rows = [];
-        if (alternatives.sensitive.length) rows.push(`<h5>Sensitive</h5>${renderItems(alternatives.sensitive, '')}`);
-        if (alternatives.vegan.length) rows.push(`<h5>Vegan-oriented</h5>${renderItems(alternatives.vegan, '')}`);
-        if (alternatives.fragrance.length) rows.push(`<h5>Fragrance-free</h5>${renderItems(alternatives.fragrance, '')}`);
+        if (alternatives.sensitive.length) rows.push(`<h5>Pelle sensibile</h5>${renderItems(alternatives.sensitive, '')}`);
+        if (alternatives.vegan.length) rows.push(`<h5>Opzioni vegan</h5>${renderItems(alternatives.vegan, '')}`);
+        if (alternatives.fragrance.length) rows.push(`<h5>Senza profumo</h5>${renderItems(alternatives.fragrance, '')}`);
         return rows.length ? `<div class="shop-alt-wrap">${rows.join('')}</div>` : '<p class="muted">Nessuna preferenza aggiuntiva selezionata.</p>';
       };
 
@@ -340,7 +340,7 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
           event.preventDefault();
           if (!routineForm.checkValidity()) {
             routineForm.reportValidity();
-            if (routineStatus) routineStatus.textContent = 'Compila i campi per vedere la routine consigliata.';
+            if (routineStatus) routineStatus.textContent = 'Compila i campi per generare una routine personalizzata.';
             return;
           }
 
@@ -355,7 +355,7 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
 
           routineResult.innerHTML = `
             <h3>Routine consigliata</h3>
-            <p class="muted">Profilo: ${skin} · Obiettivo: ${goal} · Texture: ${texture}</p>
+            <p class="muted">Profilo selezionato: ${skin} · obiettivo: ${goal} · texture: ${texture}</p>
             <div class="shop-routine-columns">
               ${renderItems(routine.morning, 'Routine mattina')}
               ${renderItems(routine.evening, 'Routine sera')}
@@ -364,7 +364,7 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
               <h4>Bundle suggerito</h4>
               <ul>${routine.bundle.map((item) => `<li>${item.name}</li>`).join('')}</ul>
               <p><strong>Totale bundle demo: EUR ${bundlePrice.toFixed(2)}</strong></p>
-              <button type="button" class="btn" data-quick-add="${routine.bundle[0]?.slug || ''}">Aggiungi primo step</button>
+              <button type="button" class="btn" data-quick-add="${routine.bundle[0]?.slug || ''}">Aggiungi il primo step</button>
             </div>
             <div>
               <h4>Alternative selezionate</h4>
@@ -429,9 +429,9 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
           picks = picks.slice(0, 3);
 
           const reasons = {
-            glow: 'Scelti per boost luminosita progressivo.',
-            hydration: 'Scelti per mantenere idratazione su piu step.',
-            calm: 'Scelti per routine essenziale a basso attrito.'
+            glow: 'Scelti per migliorare la luminosita in modo progressivo.',
+            hydration: 'Scelti per mantenere idratazione lungo tutta la routine.',
+            calm: 'Scelti per una routine essenziale e ben tollerata.'
           };
 
           aiResult.innerHTML = `
@@ -448,7 +448,7 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
             <p class="muted">Preferenze ricordate: ${avoid === 'fragrance' ? 'senza fragranze' : 'nessuna esclusione ingredienti'}.</p>
           `;
 
-          if (aiStatus) aiStatus.textContent = 'Proposte aggiornate. Se vuoi, passa a beauty advisor umano.';
+          if (aiStatus) aiStatus.textContent = 'Proposte aggiornate. Se vuoi, puoi passare a un beauty advisor umano.';
         });
       }
 

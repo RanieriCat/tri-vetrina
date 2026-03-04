@@ -20,7 +20,7 @@ const { product } = Astro.props as { product: Product };
   <p><strong>EUR {product.price.toFixed(2)}</strong></p>
 
   <div class="hero-actions">
-    <a class="btn btn--ghost" href={`/shop/products/${product.slug}`}>Dettagli</a>
-    <button class="btn add-to-cart" data-product={JSON.stringify(product)} type="button">Aggiungi</button>
+    <a class="btn btn--ghost" href={`/shop/products/${product.slug}`}>Scopri</a>
+    <button class="btn add-to-cart" data-product={JSON.stringify(product)} type="button">Aggiungi al carrello</button>
   </div>
 </article>

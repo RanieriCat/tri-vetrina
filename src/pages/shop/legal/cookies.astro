@@ -1,4 +1,4 @@
----
+﻿---
 import MainLayout from '@/layouts/MainLayout.astro';
 import { shopFooterHtml } from '@/config/shop';
 const slug = Astro.url.pathname.split('/').pop();
@@ -10,13 +10,13 @@ const titles = {
 };
 const title = titles[slug] ?? 'Informativa';
 ---
-<MainLayout template="shop" title={`${title} | Lifestyle & Beauty`} description={`${title} dello shop demo.`} footerHtml={shopFooterHtml}>
+<MainLayout template="shop" title={`${title} | Lifestyle & Beauty`} description={`${title} della vetrina lifestyle demo.`} footerHtml={shopFooterHtml}>
   <section class="section container">
     <h1>{title}</h1>
     <div class="card">
-      <p>Questa è una pagina informativa demo con struttura realistica.</p>
-      <p>Raccogliamo esclusivamente dati necessari a finalità di servizio simulate, senza alcun trattamento reale.</p>
-      <p>Per richieste amministrative: legal@lifestyle-creme.demo.</p>
+      <p>Questa pagina e una demo informativa con struttura realistica.</p>
+      <p>Eventuali dati inseriti vengono usati solo per simulare i flussi di servizio e non per trattamenti reali.</p>
+      <p>Contatto amministrativo demo: legal@lifestyle-creme.demo.</p>
     </div>
   </section>
 </MainLayout>

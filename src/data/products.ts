@@ -15,7 +15,7 @@ export const products: Product[] = [
     price: 24.9,
     category: 'Viso',
     image: 'https://images.pexels.com/photos/7143283/pexels-photo-7143283.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=600&h=380',
-    shortDescription: 'Texture leggera con vitamina C per luminosita quotidiana.',
+    shortDescription: 'Crema viso leggera con vitamina C per una luminosita quotidiana.',
     inci: 'Aqua, Glycerin, Ascorbic Acid, Tocopherol, Aloe Barbadensis Leaf Juice.'
   },
   {
@@ -24,7 +24,7 @@ export const products: Product[] = [
     price: 29.5,
     category: 'Viso',
     image: 'https://images.pexels.com/photos/36375310/pexels-photo-36375310.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=600&h=380',
-    shortDescription: 'Idratazione intensiva e effetto rimpolpante.',
+    shortDescription: 'Siero idratante con effetto rimpolpante e comfort immediato.',
     inci: 'Aqua, Sodium Hyaluronate, Panthenol, Allantoin.'
   },
   {
@@ -33,7 +33,7 @@ export const products: Product[] = [
     price: 14.0,
     category: 'Detersione',
     image: 'https://images.pexels.com/photos/3321416/pexels-photo-3321416.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=600&h=380',
-    shortDescription: 'Mousse morbida per pelli sensibili.',
+    shortDescription: 'Detersione delicata in mousse, adatta anche a pelli sensibili.',
     inci: 'Aqua, Cocamidopropyl Betaine, Glycerin, Chamomilla Recutita Extract.'
   },
   {
@@ -42,7 +42,7 @@ export const products: Product[] = [
     price: 19.9,
     category: 'Corpo',
     image: 'https://images.pexels.com/photos/3785147/pexels-photo-3785147.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=600&h=380',
-    shortDescription: 'Esfoliazione delicata con oli nutrienti.',
+    shortDescription: 'Esfoliazione delicata con oli nutrienti per pelle piu liscia.',
     inci: 'Sucrose, Prunus Amygdalus Dulcis Oil, Parfum, Vitamin E.'
   },
   {
@@ -51,7 +51,7 @@ export const products: Product[] = [
     price: 22.0,
     category: 'Corpo',
     image: 'https://images.pexels.com/photos/3851790/pexels-photo-3851790.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=600&h=380',
-    shortDescription: 'Nutrimento profondo con karite e jojoba.',
+    shortDescription: 'Nutrimento corpo intenso con burro di karite e jojoba.',
     inci: 'Butyrospermum Parkii Butter, Simmondsia Chinensis Oil, Glycerin.'
   },
   {
@@ -60,7 +60,7 @@ export const products: Product[] = [
     price: 18.5,
     category: 'Capelli',
     image: 'https://images.pexels.com/photos/6663374/pexels-photo-6663374.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=600&h=380',
-    shortDescription: 'Disciplina e protegge le punte secche.',
+    shortDescription: 'Olio leggero che disciplina e protegge le punte secche.',
     inci: 'Argania Spinosa Kernel Oil, Cocos Nucifera Oil, Parfum.'
   },
   {
@@ -69,7 +69,7 @@ export const products: Product[] = [
     price: 31.0,
     category: 'Viso',
     image: 'https://images.pexels.com/photos/3212179/pexels-photo-3212179.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=600&h=380',
-    shortDescription: 'Trattamento notturno calmante con niacinamide.',
+    shortDescription: 'Maschera notte calmante con niacinamide per pelle stressata.',
     inci: 'Aqua, Niacinamide, Bisabolol, Ceramide NP.'
   },
   {
@@ -78,7 +78,7 @@ export const products: Product[] = [
     price: 16.9,
     category: 'Detersione',
     image: 'https://images.pexels.com/photos/3985329/pexels-photo-3985329.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=600&h=380',
-    shortDescription: 'Riequilibra il pH e prepara la pelle ai trattamenti.',
+    shortDescription: 'Tonico riequilibrante che prepara la pelle agli step successivi.',
     inci: 'Rosa Damascena Flower Water, Glycerin, Lactic Acid.'
   },
   {
@@ -87,7 +87,7 @@ export const products: Product[] = [
     price: 9.9,
     category: 'Corpo',
     image: 'https://images.pexels.com/photos/36309537/pexels-photo-36309537.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=600&h=380',
-    shortDescription: 'Barriera protettiva con assorbimento rapido.',
+    shortDescription: 'Crema mani protettiva a rapido assorbimento.',
     inci: 'Aqua, Urea, Glycerin, Calendula Officinalis Extract.'
   },
   {
@@ -96,7 +96,7 @@ export const products: Product[] = [
     price: 7.5,
     category: 'Labbra',
     image: 'https://images.pexels.com/photos/36327551/pexels-photo-36327551.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=600&h=380',
-    shortDescription: 'Idratazione e comfort immediato.',
+    shortDescription: 'Balsamo labbra con idratazione immediata e comfort duraturo.',
     inci: 'Cera Alba, Ricinus Communis Seed Oil, Shea Butter.'
   }
 ];

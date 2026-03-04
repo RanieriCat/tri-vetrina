@@ -6,23 +6,23 @@ import MainLayout from '@/layouts/MainLayout.astro';
     <div class="section-head">
       <p class="eyebrow">Contatti</p>
       <h1>Parliamo del tuo shooting</h1>
-      <p class="section-intro">Compila il modulo: risposta demo entro 24 ore. Nessun dato reale viene processato.</p>
+      <p class="section-intro">Compila il modulo e descrivi il progetto: risposta demo entro 24 ore lavorative.</p>
     </div>
 
     <div class="organic-layout">
       <div class="card" data-reveal>
         <form class="grid" id="photo-form" novalidate>
-          <label>Nome <input name="nome" required autocomplete="name" /></label>
+          <label>Nome completo <input name="nome" required autocomplete="name" /></label>
           <label>Email <input name="email" type="email" required autocomplete="email" /></label>
           <label>Tipo progetto
             <select name="tipo" required>
               <option value="">Seleziona progetto</option>
-              <option value="brand">Brand</option>
-              <option value="evento">Evento</option>
-              <option value="ritratto">Ritratto</option>
+              <option value="brand">Campagna brand</option>
+              <option value="evento">Evento / reportage</option>
+              <option value="ritratto">Ritratto professionale</option>
             </select>
           </label>
-          <label>Messaggio <textarea name="messaggio" rows="5" required></textarea></label>
+          <label>Messaggio progetto <textarea name="messaggio" rows="5" required></textarea></label>
           <button class="btn" type="submit">Invia richiesta</button>
           <p id="photo-status" class="wizard-status" aria-live="polite"></p>
         </form>
@@ -33,12 +33,12 @@ import MainLayout from '@/layouts/MainLayout.astro';
           <h2>Recapiti demo</h2>
           <p><strong>Email:</strong> ciao@lucafoto.demo</p>
           <p><strong>Telefono:</strong> +39 333 000 0000</p>
-          <p><strong>Base:</strong> Milano, disponibile in trasferta.</p>
+          <p><strong>Base:</strong> Milano, disponibile per trasferte in Italia.</p>
         </article>
         <article class="card card--soft hover-lift" data-reveal>
           <h3>FAQ rapida</h3>
-          <p>Consegna media: placeholder 5-10 giorni.</p>
-          <p>Formato: web + high-res in galleria condivisa.</p>
+          <p>Consegna media: 5-10 giorni (placeholder demo).</p>
+          <p>Formato: file web + high-res in galleria condivisa.</p>
         </article>
       </aside>
     </div>
@@ -58,7 +58,7 @@ import MainLayout from '@/layouts/MainLayout.astro';
           return;
         }
 
-        if (status) status.textContent = 'Richiesta ricevuta (demo). Ti rispondiamo entro 24 ore.';
+        if (status) status.textContent = 'Richiesta inviata (demo). Ti rispondiamo entro 24 ore lavorative.';
         form.reset();
       });
     })();

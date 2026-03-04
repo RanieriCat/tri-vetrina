@@ -3,12 +3,12 @@ import MainLayout from '@/layouts/MainLayout.astro';
 import { shopFooterHtml } from '@/config/shop';
 import { cartScript } from '@/utils/cart';
 ---
-<MainLayout template="shop" title="Carrello | Lifestyle & Beauty" description="Gestisci il tuo carrello demo." footerHtml={shopFooterHtml}>
+<MainLayout template="shop" title="Carrello | Lifestyle & Beauty" description="Controlla articoli, varianti e totale prima del checkout." footerHtml={shopFooterHtml}>
   <section class="section container" data-reveal>
     <div class="section-head">
       <p class="eyebrow">Carrello</p>
-      <h1>Carrello</h1>
-      <p class="section-intro">Controlla quantita, totale e prosegui al checkout demo.</p>
+      <h1>Il tuo carrello</h1>
+      <p class="section-intro">Controlla quantita e varianti, poi prosegui al checkout.</p>
     </div>
 
     <div id="cart-list" class="grid"></div>
@@ -42,7 +42,7 @@ import { cartScript } from '@/utils/cart';
         const cart = window.shopCart.readCart();
 
         if (!cart.length) {
-          container.innerHTML = '<p class="card">Il carrello e vuoto.</p>';
+          container.innerHTML = '<p class="card">Il carrello e vuoto. Aggiungi un prodotto per iniziare.</p>';
           totalEl.textContent = 'Totale: EUR 0.00';
           return;
         }

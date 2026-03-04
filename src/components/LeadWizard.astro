@@ -2,7 +2,7 @@
 const {
   id = 'lead-wizard',
   title = 'Richiedi un contatto',
-  intro = 'Wizard demo in 3 step per raccolta lead.',
+  intro = 'Compila 3 passaggi rapidi per inviare la richiesta.',
   needs,
   submitLabel = 'Invia richiesta'
 } = Astro.props as {
@@ -23,7 +23,7 @@ const messageId = `${id}-message`;
 <section id={id} class="section container" data-reveal>
   <div class="card wizard-shell">
     <div class="section-head">
-      <p class="eyebrow">Lead capture</p>
+      <p class="eyebrow">Richiesta contatto</p>
       <h2>{title}</h2>
       <p class="section-intro">{intro}</p>
     </div>
@@ -154,7 +154,7 @@ const messageId = `${id}-message`;
         return;
       }
 
-      if (status) status.textContent = 'Richiesta registrata (demo). Ti contattiamo presto.';
+      if (status) status.textContent = 'Richiesta inviata (demo). Ti contattiamo presto.';
       form.reset();
       setStep(0);
     });
