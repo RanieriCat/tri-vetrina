@@ -6,47 +6,281 @@ import { shopFooterHtml } from '@/config/shop';
 
 export const getStaticPaths = () => products.map((product) => ({ params: { slug: product.slug }, props: { product } }));
 const { product } = Astro.props;
+
+const clips = [
+  {
+    title: 'Texture test',
+    duration: '12s',
+    poster: 'https://images.pexels.com/videos/8996176/free-video-8996176.jpg?fit=crop&w=900&h=1600&auto=compress&cs=tinysrgb',
+    source: 'https://videos.pexels.com/video-files/8996176/8996176-hd_1080_1920_25fps.mp4'
+  },
+  {
+    title: 'Applicazione reale',
+    duration: '18s',
+    poster: 'https://images.pexels.com/videos/5927886/free-video-5927886.jpg?fit=crop&w=900&h=1600&auto=compress&cs=tinysrgb',
+    source: 'https://videos.pexels.com/video-files/5927886/5927886-hd_1920_1080_25fps.mp4'
+  },
+  {
+    title: 'Prima / dopo',
+    duration: '22s',
+    poster: 'https://images.pexels.com/videos/7305916/free-video-7305916.jpg?fit=crop&w=900&h=1600&auto=compress&cs=tinysrgb',
+    source: 'https://videos.pexels.com/video-files/7305916/7305916-uhd_4096_2160_25fps.mp4'
+  }
+];
+
+const ugcItems = [
+  {
+    author: 'Chiara, 29',
+    skin: 'sensibile',
+    tone: 'chiaro',
+    finish: 'natural',
+    note: 'Texture leggera, assorbimento rapido in routine mattina.',
+    image: 'https://images.pexels.com/photos/7143283/pexels-photo-7143283.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=900&h=1200'
+  },
+  {
+    author: 'Marta, 34',
+    skin: 'mista',
+    tone: 'medio',
+    finish: 'dewy',
+    note: 'Buon glow graduale in 2 settimane di uso costante (esperienza demo).',
+    image: 'https://images.pexels.com/photos/3851790/pexels-photo-3851790.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=900&h=1200'
+  },
+  {
+    author: 'Elisa, 41',
+    skin: 'secca',
+    tone: 'olivastro',
+    finish: 'rich',
+    note: 'Comfort serale elevato, nessuna sensazione di pelle che tira.',
+    image: 'https://images.pexels.com/photos/3212179/pexels-photo-3212179.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=900&h=1200'
+  },
+  {
+    author: 'Sara, 26',
+    skin: 'sensibile',
+    tone: 'medio',
+    finish: 'light',
+    note: 'Ottima base prima del make-up, finish stabile.',
+    image: 'https://images.pexels.com/photos/6663374/pexels-photo-6663374.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=900&h=1200'
+  }
+];
 ---
 <MainLayout footerHtml={shopFooterHtml} template="shop" title={`${product.name} | Lifestyle e Creme`} description={product.shortDescription}>
-  <section class="section container grid md-2" data-reveal>
-    <img
-      src={product.image}
-      alt={product.name}
-      class="card"
-      width="600"
-      height="380"
-      loading="eager"
-      decoding="async"
-      style="width: 100%; aspect-ratio: 4 / 3; object-fit: cover;"
-    />
+  <div class="shop-page">
+    <section class="section container shop-pdp-top" data-reveal>
+      <div class="shop-pdp-media-stack">
+        <div class="shop-video-grid" aria-label="Video corti shoppable" data-reveal>
+          {clips.map((clip, index) => (
+            <article class="card shop-video-card">
+              <video controls playsinline preload="metadata" poster={clip.poster}>
+                <source src={clip.source} type="video/mp4" />
+              </video>
+              <div class="shop-video-meta">
+                <p><strong>{clip.title}</strong> · {clip.duration}</p>
+                <button class="btn btn--ghost" type="button" data-pdp-add data-variant={`Clip ${index + 1}`}>Shop this clip</button>
+              </div>
+            </article>
+          ))}
+        </div>
 
-    <div class="card" data-reveal>
-      <p class="muted">{product.category}</p>
-      <h1>{product.name}</h1>
-      <p>{product.shortDescription}</p>
-      <p><strong>EUR {product.price.toFixed(2)}</strong></p>
-      <h2>Ingredienti / INCI</h2>
-      <p>{product.inci}</p>
-      <button class="btn" id="detail-add" data-product={JSON.stringify(product)} type="button">Aggiungi al carrello</button>
-      <p id="detail-status" class="wizard-status" aria-live="polite"></p>
+        <article class="card shop-ugc-inline" data-reveal>
+          <div class="shop-ugc-head">
+            <p class="eyebrow">UGC sopra la piega</p>
+            <h2>Filtra per tipo pelle, tone e finish</h2>
+          </div>
+
+          <div class="shop-ugc-filters" role="group" aria-label="Filtri UGC rapidi">
+            <button class="btn btn--ghost" type="button" data-ugc-filter="all" aria-pressed="true" aria-controls="shop-ugc-grid">Tutti</button>
+            <button class="btn btn--ghost" type="button" data-ugc-filter="sensibile" aria-pressed="false" aria-controls="shop-ugc-grid">Pelle sensibile</button>
+            <button class="btn btn--ghost" type="button" data-ugc-filter="dewy" aria-pressed="false" aria-controls="shop-ugc-grid">Finish dewy</button>
+            <button class="btn btn--ghost" type="button" data-ugc-filter="chiaro" aria-pressed="false" aria-controls="shop-ugc-grid">Tone chiaro</button>
+          </div>
+
+          <div class="shop-ugc-grid" id="shop-ugc-grid">
+            {ugcItems.map((ugc) => (
+              <article class="shop-ugc-card" data-ugc-card data-skin={ugc.skin} data-tone={ugc.tone} data-finish={ugc.finish}>
+                <img src={ugc.image} alt={`UGC ${ugc.author}`} width="900" height="1200" loading="lazy" decoding="async" />
+                <p><strong>{ugc.author}</strong></p>
+                <p class="muted">{ugc.note}</p>
+              </article>
+            ))}
+          </div>
+        </article>
+      </div>
+
+      <article class="card shop-pdp-buy" data-reveal>
+        <p class="eyebrow">As seen on social</p>
+        <p class="muted">TikTok Shop · Instagram Shop · Pinterest Product Pins</p>
+        <h1>{product.name}</h1>
+        <p>{product.shortDescription}</p>
+
+        <div class="shop-result-timing">
+          <p><strong>Risultati tipici (demo):</strong> texture percepita da subito, miglioramento comfort in 7-14 giorni di uso costante.</p>
+          <p class="muted">Tempistiche realistiche: i risultati variano in base a routine e tipo pelle.</p>
+        </div>
+
+        <p><strong>EUR {product.price.toFixed(2)}</strong></p>
+
+        <label for="detail-shade">
+          Variante / shade
+          <select id="detail-shade" name="shade">
+            <option value="Original">Original</option>
+            <option value="Light">Light</option>
+            <option value="Rich">Rich</option>
+          </select>
+        </label>
+
+        <div class="hero-actions">
+          <button class="btn" id="detail-add" data-product={JSON.stringify(product)} type="button">Aggiungi al carrello</button>
+          <a class="btn btn--ghost" href="/shop/checkout">Checkout express</a>
+        </div>
+
+        <div class="shop-express-row" aria-label="Metodi pagamento express demo">
+          <button type="button" class="btn btn--ghost">Apple Pay</button>
+          <button type="button" class="btn btn--ghost">Google Pay</button>
+          <button type="button" class="btn btn--ghost">PayPal</button>
+        </div>
+
+        <p class="shop-delivery-line">Spedizione demo 48-72h · Reso demo 30 giorni · Tracking incluso.</p>
+        <p id="detail-status" class="wizard-status" aria-live="polite"></p>
+      </article>
+    </section>
+
+    <section class="section container" data-reveal>
+      <div class="section-head">
+        <p class="eyebrow">Clean lab transparency</p>
+        <h2>Ingredienti senza ansia</h2>
+        <p class="section-intro">Per ogni prodotto: cosa fa, per chi e cosa evitare. Badge sobri, niente parete di icone.</p>
+      </div>
+
+      <div class="shop-cleanlab-grid">
+        <article class="card" data-reveal>
+          <h3>Cosa fa</h3>
+          <p>{product.shortDescription}</p>
+          <p class="muted">Benefit principale orientato a comfort e routine quotidiana.</p>
+        </article>
+
+        <article class="card" data-reveal>
+          <h3>Per chi</h3>
+          <ul>
+            <li>Pelli da normali a sensibili (verifica personale consigliata).</li>
+            <li>Routine mattina/sera con texture progressiva.</li>
+            <li>Chi cerca risultato graduale e non invasivo.</li>
+          </ul>
+        </article>
+
+        <article class="card" data-reveal>
+          <h3>Cosa evitare / attenzione</h3>
+          <ul>
+            <li>Controllare sempre INCI completo prima dell uso.</li>
+            <li>Patch test consigliato su pelle reattiva.</li>
+            <li>In gravidanza/allattamento, valutare con professionista se necessario.</li>
+          </ul>
+        </article>
+      </div>
+
+      <article class="card card--soft" data-reveal>
+        <h3>INCI completo</h3>
+        <p>{product.inci}</p>
+      </article>
+    </section>
+
+    <section class="section container" data-reveal>
+      <div class="section-head">
+        <p class="eyebrow">Prove e credibilita</p>
+        <h2>Claim con fonte e nota</h2>
+      </div>
+
+      <div class="shop-proof-grid">
+        <article class="card" data-reveal>
+          <p><strong>Claim:</strong> Formula piu scelta per routine glow (dato demo).</p>
+          <p><strong>Fonte:</strong> panel interno e-commerce demo.</p>
+          <p class="muted">Nota: metrica non clinica, basata su acquisto e feedback utente.</p>
+        </article>
+        <article class="card" data-reveal>
+          <p><strong>Claim:</strong> Buona tollerabilita percepita su pelle sensibile (dato demo).</p>
+          <p><strong>Fonte:</strong> survey post-acquisto con filtri tipo pelle.</p>
+          <p class="muted">Nota: i risultati personali possono variare.</p>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <div class="shop-sticky-atc" role="region" aria-label="Aggiungi al carrello rapido">
+    <div class="shop-sticky-wrap">
+      <label for="sticky-shade" class="shop-sticky-label">
+        Shade
+        <select id="sticky-shade" name="stickyShade">
+          <option value="Original">Original</option>
+          <option value="Light">Light</option>
+          <option value="Rich">Rich</option>
+        </select>
+      </label>
+      <button class="btn" id="sticky-add" type="button">Aggiungi</button>
+      <p class="shop-sticky-note">Spedizione demo 48-72h · Reso 30 giorni</p>
     </div>
-  </section>
+  </div>
 
   <script is:inline set:html={cartScript}></script>
   <script is:inline>
     (() => {
-      const button = document.getElementById('detail-add');
+      const productButton = document.getElementById('detail-add');
+      const stickyButton = document.getElementById('sticky-add');
+      const detailShade = document.getElementById('detail-shade');
+      const stickyShade = document.getElementById('sticky-shade');
       const status = document.getElementById('detail-status');
-      if (!(button instanceof HTMLButtonElement)) return;
 
-      button.addEventListener('click', () => {
+      const syncShades = (source, target) => {
+        if (!(source instanceof HTMLSelectElement) || !(target instanceof HTMLSelectElement)) return;
+        target.value = source.value;
+      };
+
+      if (detailShade instanceof HTMLSelectElement && stickyShade instanceof HTMLSelectElement) {
+        detailShade.addEventListener('change', () => syncShades(detailShade, stickyShade));
+        stickyShade.addEventListener('change', () => syncShades(stickyShade, detailShade));
+      }
+
+      const addCurrentProduct = (variant = '') => {
+        if (!(productButton instanceof HTMLButtonElement)) return;
+        if (!window.shopCart) return;
+
         try {
-          const payload = JSON.parse(button.dataset.product || '{}');
-          window.shopCart.addToCart(payload);
-          if (status) status.textContent = `${payload.name} aggiunto al carrello (demo).`;
+          const payload = JSON.parse(productButton.dataset.product || '{}');
+          const shade = detailShade instanceof HTMLSelectElement ? detailShade.value : 'Original';
+          const finalVariant = variant || shade;
+          window.shopCart.addToCart({ ...payload, variant: finalVariant });
+          if (status) status.textContent = `${payload.name} · ${finalVariant} aggiunto al carrello (demo).`;
         } catch {
           if (status) status.textContent = 'Errore nel caricamento del prodotto demo.';
         }
+      };
+
+      productButton?.addEventListener('click', () => addCurrentProduct());
+      stickyButton?.addEventListener('click', () => addCurrentProduct());
+
+      document.querySelectorAll('[data-pdp-add]').forEach((button) => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        button.addEventListener('click', () => addCurrentProduct(button.dataset.variant || 'Clip pick'));
+      });
+
+      const ugcButtons = Array.from(document.querySelectorAll('[data-ugc-filter]'));
+      const ugcCards = Array.from(document.querySelectorAll('[data-ugc-card]'));
+
+      ugcButtons.forEach((button) => {
+        if (!(button instanceof HTMLButtonElement)) return;
+        button.addEventListener('click', () => {
+          const filter = button.dataset.ugcFilter || 'all';
+          ugcButtons.forEach((item) => {
+            if (item instanceof HTMLButtonElement) item.setAttribute('aria-pressed', item === button ? 'true' : 'false');
+          });
+          ugcCards.forEach((card) => {
+            if (!(card instanceof HTMLElement)) return;
+            if (filter === 'all') {
+              card.hidden = false;
+              return;
+            }
+            const match = [card.dataset.skin, card.dataset.tone, card.dataset.finish].includes(filter);
+            card.hidden = !match;
+          });
+        });
       });
     })();
   </script>

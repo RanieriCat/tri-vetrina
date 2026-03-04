@@ -52,7 +52,7 @@ import { cartScript } from '@/utils/cart';
             (item, index) => `
               <article class="card" style="display:grid;grid-template-columns:1fr auto;gap:.8rem;align-items:center;">
                 <div>
-                  <h3>${item.name}</h3>
+                  <h3>${item.name}${item.variant ? ` · ${item.variant}` : ''}</h3>
                   <p>EUR ${item.price.toFixed(2)} x ${item.qty}</p>
                 </div>
                 <div class="hero-actions">

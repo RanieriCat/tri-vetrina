@@ -54,7 +54,7 @@ import { cartScript } from '@/utils/cart';
 
         summary.innerHTML = cart.length
           ? `<ul>${cart
-              .map((item) => `<li>${item.name} x ${item.qty} - EUR ${(item.price * item.qty).toFixed(2)}</li>`)
+              .map((item) => `<li>${item.name}${item.variant ? ` (${item.variant})` : ''} x ${item.qty} - EUR ${(item.price * item.qty).toFixed(2)}</li>`)
               .join('')}</ul><p><strong>Totale EUR ${total.toFixed(2)}</strong></p>`
           : '<p>Carrello vuoto. Aggiungi prodotti prima del checkout.</p>';
       };
