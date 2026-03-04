@@ -13,9 +13,9 @@ const meta = {
     badge: 'Skin routine',
     caption: 'Visual demo orientato a texture e benessere quotidiano.'
   },
-  psy: {
-    badge: 'Calm space',
-    caption: 'Visual demo orientato a ascolto, ritmo e continuita.'
+  photo: {
+    badge: 'Cinematic shot',
+    caption: 'Visual demo orientato a storytelling visivo e composizione.'
   }
 }[template];
 ---
@@ -45,12 +45,12 @@ const meta = {
       </g>
     )}
 
-    {template === 'psy' && (
+    {template === 'photo' && (
       <g>
-        <circle cx="190" cy="150" r="88" fill="none" stroke="currentColor" stroke-opacity="0.35" stroke-width="10"></circle>
-        <path d="M92 184c28-48 60-70 98-70s70 22 98 70" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"></path>
-        <path d="M92 142c28-33 60-49 98-49s70 16 98 49" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"></path>
-        <circle cx="190" cy="150" r="14" fill="currentColor"></circle>
+        <rect x="92" y="84" width="196" height="132" rx="22" fill="none" stroke="currentColor" stroke-width="10"></rect>
+        <circle cx="238" cy="130" r="18" fill="currentColor" opacity="0.22"></circle>
+        <path d="M114 196l48-44 36 30 28-24 42 38" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"></path>
+        <path d="M154 84v-22c0-8 7-14 16-14h40c9 0 16 6 16 14v22" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"></path>
       </g>
     )}
   </svg>

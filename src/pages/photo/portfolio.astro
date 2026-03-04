@@ -1,0 +1,70 @@
+﻿---
+import MainLayout from '@/layouts/MainLayout.astro';
+
+const projects = [
+  {
+    title: 'Editoriale urbano',
+    tag: 'Fashion / Street',
+    image: 'https://picsum.photos/seed/photo-editorial-01/900/600',
+    note: 'Palette contrastata e luce naturale guidata.'
+  },
+  {
+    title: 'Campagna prodotto',
+    tag: 'Brand / E-commerce',
+    image: 'https://picsum.photos/seed/photo-brand-02/900/600',
+    note: 'Set minimale per focus su texture e dettagli.'
+  },
+  {
+    title: 'Ritratto creativo',
+    tag: 'Portrait',
+    image: 'https://picsum.photos/seed/photo-portrait-03/900/600',
+    note: 'Composizione dinamica con direzione posa soft.'
+  },
+  {
+    title: 'Evento live',
+    tag: 'Event',
+    image: 'https://picsum.photos/seed/photo-event-04/900/600',
+    note: 'Sequenza narrativa per recap social e stampa.'
+  },
+  {
+    title: 'Food storytelling',
+    tag: 'Food / Lifestyle',
+    image: 'https://picsum.photos/seed/photo-food-05/900/600',
+    note: 'Luce morbida e ritmo visivo per serie coerente.'
+  },
+  {
+    title: 'Team portraits',
+    tag: 'Corporate',
+    image: 'https://picsum.photos/seed/photo-team-06/900/600',
+    note: 'Look professionale ma naturale su set in sede.'
+  }
+];
+---
+<MainLayout template="photo" title="Portfolio | Luca Ferretti" description="Selezione lavori demo: brand, eventi, ritratto e storytelling visuale.">
+  <section class="section container" data-reveal>
+    <div class="section-head">
+      <p class="eyebrow">Portfolio</p>
+      <h1>Selezione lavori</h1>
+      <p class="section-intro">Galleria demo con immagini responsive e card ad alta leggibilita, pensata per mobile-first e conversione verso contatto.</p>
+    </div>
+
+    <div class="grid md-3">
+      {projects.map((project) => (
+        <article class="card product-card hover-lift" data-reveal>
+          <img
+            src={project.image}
+            alt={project.title}
+            width="900"
+            height="600"
+            loading="lazy"
+            decoding="async"
+            style="aspect-ratio: 3 / 2; object-fit: cover;"
+          />
+          <p class="eyebrow" style="margin:0; width:max-content;">{project.tag}</p>
+          <h2>{project.title}</h2>
+          <p>{project.note}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+</MainLayout>

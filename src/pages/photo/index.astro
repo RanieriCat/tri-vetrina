@@ -1,0 +1,104 @@
+﻿---
+import BentoFeatures from '@/components/BentoFeatures.astro';
+import LeadWizard from '@/components/LeadWizard.astro';
+import MainLayout from '@/layouts/MainLayout.astro';
+import ProfileHero from '@/components/ProfileHero.astro';
+import TrustSection from '@/components/TrustSection.astro';
+---
+<MainLayout template="photo" title="Luca Ferretti | Fotografo" description="Fotografia lifestyle, eventi e ritratto con direzione creativa mobile-first.">
+  <ProfileHero
+    template="photo"
+    kicker="Tri Vetrina / Fotografo"
+    title="Scatti narrativi con estetica editoriale e conversione orientata al contatto."
+    description="UI mobile-first con tipografia oversize, palette calda e ritmo visivo chiaro per portare l utente dal portfolio alla richiesta in pochi passaggi."
+    primaryCta={{ href: '#photo-lead', label: 'Richiedi disponibilita' }}
+    secondaryCta={{ href: '/photo/portfolio', label: 'Apri portfolio' }}
+    note="Contenuto demo: metriche e referenze sono placeholder, senza dati reali verificati."
+  />
+
+  <TrustSection
+    eyebrow="Trust-first"
+    title="Elementi fiducia sopra la piega"
+    intro="Logo strip, metriche e testimonianza sono placeholders strutturali per testare credibilita e conversione."
+    logos={['Agency A', 'Studio B', 'Event C', 'Brand D']}
+    metrics={[
+      { value: 'XX+', label: 'Shooting demo / anno', note: 'Placeholder' },
+      { value: 'YY%', label: 'Lead completati', note: 'Placeholder' },
+      { value: 'ZZ h', label: 'Prima risposta media', note: 'Placeholder' },
+      { value: 'AA/5', label: 'Feedback esperienza', note: 'Placeholder' }
+    ]}
+    quote="Placeholder testimonianza: comunicazione rapida, direzione chiara e consegna ordinata."
+    quoteAuthor="Cliente demo"
+  />
+
+  <BentoFeatures
+    id="servizi"
+    eyebrow="Bento portfolio"
+    title="Feature grid con card dominante"
+    intro="La card principale guida verso il servizio ad alto valore; le card secondarie dettagliano output e processo."
+    items={[
+      {
+        icon: 'ART',
+        title: 'Shooting brand & editoriale',
+        body: 'Card dominante con focus su storytelling visivo, direzione creativa e coerenza feed.',
+        dominant: true
+      },
+      {
+        icon: 'EVT',
+        title: 'Eventi e backstage',
+        body: 'Copertura dinamica con selezione pronta per social e press kit.'
+      },
+      {
+        icon: 'POR',
+        title: 'Ritratti ambientati',
+        body: 'Sessioni guidate per professionisti, team e creator.'
+      },
+      {
+        icon: 'RET',
+        title: 'Post-produzione',
+        body: 'Color grading coerente e ottimizzazione multi-formato.'
+      },
+      {
+        icon: 'DEL',
+        title: 'Consegna smart',
+        body: 'Galleria condivisa con selezione e download ottimizzati.'
+      }
+    ]}
+  />
+
+  <section class="section container" data-reveal>
+    <div class="section-head">
+      <p class="eyebrow">Organic layout</p>
+      <h2>Asimmetria controllata, leggibile su mobile</h2>
+      <p class="section-intro">Blocchi principali a sinistra e supporto operativo a destra per ridurre indecisione durante la valutazione del servizio.</p>
+    </div>
+
+    <div class="organic-layout">
+      <article class="card hover-lift" data-reveal>
+        <h3>Workflow rapido</h3>
+        <p>1. Brief sintetico con obiettivi e mood.</p>
+        <p>2. Produzione shooting con shotlist condivisa.</p>
+        <p>3. Selezione finale e consegna in galleria cloud.</p>
+      </article>
+
+      <aside class="organic-side">
+        <article class="card card--soft hover-lift" data-reveal>
+          <h3>Microcopy orientato al cliente</h3>
+          <p>Copy breve, concreto e senza tecnicismi inutili per aumentare la chiarezza decisionale.</p>
+        </article>
+        <article class="card card--soft hover-lift" data-reveal>
+          <h3>Iconografia coerente</h3>
+          <p>Tag visivi semplici per servizio, output e tempi di consegna.</p>
+        </article>
+      </aside>
+    </div>
+  </section>
+
+  <LeadWizard
+    id="photo-lead"
+    title="Raccontami il tuo progetto"
+    intro="Wizard 3 step con validazione base: nome, email e tipo di shooting richiesto."
+    needs={['Shooting brand', 'Evento', 'Ritratto professionale']}
+    submitLabel="Invia richiesta"
+  />
+</MainLayout>

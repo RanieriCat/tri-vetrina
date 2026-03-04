@@ -22,6 +22,13 @@ const {
 };
 
 const pathname = Astro.url.pathname;
+const normalizeHref = (href: string) => href.split('#')[0] || href;
+const isTopNavCurrent = (href: string) => href === pathname;
+const isBottomNavCurrent = (href: string) => !href.includes('#') && normalizeHref(href) === pathname;
+const showBottomPillNav = template === 'photo';
+const bottomNav = [{ href: templates[template].home, label: 'Home' }, ...nav]
+  .filter((item, index, array) => index === array.findIndex((entry) => entry.href === item.href))
+  .slice(0, 5);
 ---
 <html lang="it" data-theme={template} data-color-mode="light">
   <head>
@@ -48,14 +55,14 @@ const pathname = Astro.url.pathname;
       })();
     </script>
   </head>
-  <body>
+  <body class={showBottomPillNav ? 'has-bottom-pill-nav' : undefined}>
     <header class="header">
       <div class="container header-row">
         <a href={templates[template].home} class="brand">{templates[template].label}</a>
 
         <nav class="nav" aria-label="Navigazione principale">
           {nav.map((item) => (
-            <a href={item.href} class={pathname === item.href ? 'active' : ''}>{item.label}</a>
+            <a href={item.href} class={isTopNavCurrent(item.href) ? 'active' : ''}>{item.label}</a>
           ))}
         </nav>
 
@@ -74,6 +81,27 @@ const pathname = Astro.url.pathname;
         {footerHtml && <div set:html={footerHtml}></div>}
       </div>
     </footer>
+
+    {showBottomPillNav && (
+      <nav class="bottom-pill-nav menu-island is-collapsed" aria-label="Navigazione principale fotografo">
+        <button
+          class="menu-island-toggle"
+          data-menu-island-toggle
+          type="button"
+          aria-controls="menu-island-links"
+          aria-expanded="false"
+          aria-label="Apri navigazione rapida"
+        >
+          <span class="menu-island-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Apri o chiudi menu rapido</span>
+        </button>
+        <div id="menu-island-links" class="bottom-pill-wrap" style={`--pill-count:${bottomNav.length};`}>
+          {bottomNav.map((item) => (
+            <a href={item.href} class={`bottom-pill-link ${isBottomNavCurrent(item.href) ? 'active' : ''}`}>{item.label}</a>
+          ))}
+        </div>
+      </nav>
+    )}
 
     <script is:inline>
       (() => {
@@ -104,6 +132,74 @@ const pathname = Astro.url.pathname;
           node.style.setProperty('--reveal-delay', `${Math.min(index * 55, 250)}ms`);
           observer.observe(node);
         });
+      })();
+    </script>
+    <script is:inline>
+      (() => {
+        const island = document.querySelector('.menu-island');
+        if (!(island instanceof HTMLElement)) return;
+
+        const toggle = island.querySelector('[data-menu-island-toggle]');
+        if (!(toggle instanceof HTMLButtonElement)) return;
+
+        const desktopQuery = window.matchMedia('(min-width: 960px)');
+        const links = Array.from(island.querySelectorAll('.bottom-pill-link'));
+        let isOpen = false;
+
+        const applyState = () => {
+          const isDesktop = desktopQuery.matches;
+
+          island.classList.toggle('is-collapsed', !isDesktop && !isOpen);
+          toggle.hidden = isDesktop;
+          toggle.setAttribute('aria-expanded', String(isDesktop || isOpen));
+          toggle.setAttribute(
+            'aria-label',
+            isDesktop || isOpen ? 'Chiudi navigazione rapida' : 'Apri navigazione rapida'
+          );
+        };
+
+        const syncViewportState = () => {
+          isOpen = desktopQuery.matches;
+          applyState();
+        };
+
+        toggle.addEventListener('click', () => {
+          isOpen = !isOpen;
+          applyState();
+        });
+
+        links.forEach((link) => {
+          link.addEventListener('click', () => {
+            if (desktopQuery.matches) return;
+            isOpen = false;
+            applyState();
+          });
+        });
+
+        document.addEventListener('click', (event) => {
+          if (desktopQuery.matches || !isOpen) return;
+          const target = event.target;
+          if (!(target instanceof Node)) return;
+          if (island.contains(target)) return;
+          isOpen = false;
+          applyState();
+        });
+
+        document.addEventListener('keydown', (event) => {
+          if (event.key !== 'Escape') return;
+          if (desktopQuery.matches || !isOpen) return;
+          isOpen = false;
+          applyState();
+          toggle.focus();
+        });
+
+        if (desktopQuery.addEventListener) {
+          desktopQuery.addEventListener('change', syncViewportState);
+        } else {
+          desktopQuery.addListener(syncViewportState);
+        }
+
+        syncViewportState();
       })();
     </script>
   </body>

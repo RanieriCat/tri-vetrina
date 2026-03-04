@@ -1,0 +1,66 @@
+﻿---
+import MainLayout from '@/layouts/MainLayout.astro';
+---
+<MainLayout template="photo" title="Contatti | Luca Ferretti" description="Richiedi disponibilita per shooting brand, eventi e ritratti.">
+  <section class="section container" data-reveal>
+    <div class="section-head">
+      <p class="eyebrow">Contatti</p>
+      <h1>Parliamo del tuo shooting</h1>
+      <p class="section-intro">Compila il modulo: risposta demo entro 24 ore. Nessun dato reale viene processato.</p>
+    </div>
+
+    <div class="organic-layout">
+      <div class="card" data-reveal>
+        <form class="grid" id="photo-form" novalidate>
+          <label>Nome <input name="nome" required autocomplete="name" /></label>
+          <label>Email <input name="email" type="email" required autocomplete="email" /></label>
+          <label>Tipo progetto
+            <select name="tipo" required>
+              <option value="">Seleziona progetto</option>
+              <option value="brand">Brand</option>
+              <option value="evento">Evento</option>
+              <option value="ritratto">Ritratto</option>
+            </select>
+          </label>
+          <label>Messaggio <textarea name="messaggio" rows="5" required></textarea></label>
+          <button class="btn" type="submit">Invia richiesta</button>
+          <p id="photo-status" class="wizard-status" aria-live="polite"></p>
+        </form>
+      </div>
+
+      <aside class="organic-side">
+        <article class="card card--soft hover-lift" data-reveal>
+          <h2>Recapiti demo</h2>
+          <p><strong>Email:</strong> ciao@lucafoto.demo</p>
+          <p><strong>Telefono:</strong> +39 333 000 0000</p>
+          <p><strong>Base:</strong> Milano, disponibile in trasferta.</p>
+        </article>
+        <article class="card card--soft hover-lift" data-reveal>
+          <h3>FAQ rapida</h3>
+          <p>Consegna media: placeholder 5-10 giorni.</p>
+          <p>Formato: web + high-res in galleria condivisa.</p>
+        </article>
+      </aside>
+    </div>
+  </section>
+
+  <script is:inline>
+    (() => {
+      const form = document.getElementById('photo-form');
+      const status = document.getElementById('photo-status');
+      if (!(form instanceof HTMLFormElement)) return;
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          if (status) status.textContent = 'Controlla i campi obbligatori prima di inviare.';
+          return;
+        }
+
+        if (status) status.textContent = 'Richiesta ricevuta (demo). Ti rispondiamo entro 24 ore.';
+        form.reset();
+      });
+    })();
+  </script>
+</MainLayout>

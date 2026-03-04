@@ -1,4 +1,4 @@
-export type TemplateKey = 'doctor' | 'shop' | 'psy';
+export type TemplateKey = 'doctor' | 'shop' | 'photo';
 
 export const templates = {
   doctor: {
@@ -20,15 +20,15 @@ export const templates = {
       { href: '/shop/checkout', label: 'Checkout' }
     ]
   },
-  psy: {
-    label: 'Promo Psicologo',
-    home: '/psy',
+  photo: {
+    label: 'Portfolio Fotografo',
+    home: '/photo',
     nav: [
-      { href: '/psy', label: 'Home' },
-      { href: '/psy/chi-sono', label: 'Chi sono' },
-      { href: '/psy/percorsi', label: 'Percorsi' },
-      { href: '/psy/risorse', label: 'Risorse' },
-      { href: '/psy/contatti', label: 'Contatti' }
+      { href: '/photo', label: 'Home' },
+      { href: '/photo/portfolio', label: 'Portfolio' },
+      { href: '/photo/servizi', label: 'Servizi' },
+      { href: '/photo/stile', label: 'Stile' },
+      { href: '/photo/contatti', label: 'Contatti' }
     ]
   }
 } as const;
