@@ -1,9 +1,9 @@
 ﻿# Tri Vetrina (Astro)
 
 Progetto Astro unico con 3 template demo di sito vetrina:
-- `/doctor` - Vetrina Dottore (single page)
-- `/shop` - Lifestyle e Creme (shop demo con carrello/checkout mock)
-- `/photo` - Portfolio Fotografo
+- `/doctor` - Doctor (single page)
+- `/shop` - Lifestyle & Beauty (shop demo con carrello/checkout mock)
+- `/photo` - Photographer
 
 ## Avvio progetto
 ```bash

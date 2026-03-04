@@ -2,7 +2,7 @@ export type TemplateKey = 'doctor' | 'shop' | 'photo';
 
 export const templates = {
   doctor: {
-    label: 'Vetrina Dottore',
+    label: 'Doctor',
     home: '/doctor',
     nav: [
       { href: '/doctor#prenota', label: 'Prenota' },
@@ -13,7 +13,7 @@ export const templates = {
     ]
   },
   shop: {
-    label: 'Lifestyle e Creme',
+    label: 'Lifestyle & Beauty',
     home: '/shop',
     nav: [
       { href: '/shop', label: 'Home' },
@@ -23,7 +23,7 @@ export const templates = {
     ]
   },
   photo: {
-    label: 'Portfolio Fotografo',
+    label: 'Photographer',
     home: '/photo',
     nav: [
       { href: '/photo', label: 'Home' },
