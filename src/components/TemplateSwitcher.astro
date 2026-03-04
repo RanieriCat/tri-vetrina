@@ -1,23 +1,51 @@
----
+﻿---
 import { templates, type TemplateKey } from '@/config/templates';
+
 const { currentTemplate } = Astro.props as { currentTemplate: TemplateKey };
 ---
-<label aria-label="Seleziona template" style="font-size:.9rem; color:var(--muted);">
-  Template
+<label class="switcher" for="template-switcher" aria-label="Seleziona vetrina">
+  Vetrina
   <select id="template-switcher" aria-label="Template switcher">
     {Object.entries(templates).map(([key, template]) => (
       <option value={key} selected={key === currentTemplate}>{template.label}</option>
     ))}
   </select>
 </label>
-<script is:inline>
-  const selector = document.getElementById('template-switcher');
-  const templateMap = { doctor: '/doctor', shop: '/shop', psy: '/psy' };
-  if (selector) {
+
+<script is:inline define:vars={{ currentTemplate }}>
+  (() => {
+    const key = 'preferred-template';
+    const selector = document.getElementById('template-switcher');
+    if (!(selector instanceof HTMLSelectElement)) return;
+
+    const templateMap = {
+      doctor: '/doctor',
+      shop: '/shop',
+      psy: '/psy'
+    };
+
+    const writePreference = (template) => {
+      try {
+        localStorage.setItem(key, template);
+      } catch {
+        // Ignore private-mode/localStorage errors.
+      }
+      document.cookie = `preferred-template=${template}; path=/; max-age=31536000; samesite=lax`;
+    };
+
+    selector.value = currentTemplate;
+    writePreference(currentTemplate);
+
     selector.addEventListener('change', (event) => {
-      const template = event.target.value;
-      localStorage.setItem('preferred-template', template);
-      window.location.href = templateMap[template] ?? '/doctor';
+      const target = event.target;
+      if (!(target instanceof HTMLSelectElement)) return;
+
+      const template = target.value;
+      const destination = templateMap[template];
+      if (!destination) return;
+
+      writePreference(template);
+      if (window.location.pathname !== destination) window.location.href = destination;
     });
-  }
+  })();
 </script>

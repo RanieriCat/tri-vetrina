@@ -1,30 +1,146 @@
----
+﻿---
+import BentoFeatures from '@/components/BentoFeatures.astro';
+import LeadWizard from '@/components/LeadWizard.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
-import { products } from '@/data/products';
 import ProductCard from '@/components/ProductCard.astro';
+import ProfileHero from '@/components/ProfileHero.astro';
+import TrustSection from '@/components/TrustSection.astro';
 import { cartScript } from '@/utils/cart';
+import { products } from '@/data/products';
 import { shopFooterHtml } from '@/config/shop';
+
 const featured = products.slice(0, 4);
 ---
 <MainLayout footerHtml={shopFooterHtml} template="shop" title="Lifestyle e Creme" description="Shop demo skincare naturale con checkout mock.">
-  <section class="hero container">
-    <h1>Routine skincare semplice, efficace, sensoriale.</h1>
-    <p>Scopri la nostra selezione di trattamenti viso e corpo con ingredienti bilanciati.</p>
-    <a class="btn" href="/shop/products">Esplora catalogo</a>
+  <ProfileHero
+    template="shop"
+    kicker="Tri Vetrina / Shop"
+    title="Skincare demo con visual vividi e percorso acquisto lineare."
+    description="La hero combina tipografia oversize, profondita leggera e CTA ad alto contrasto per favorire scoperta e conversione."
+    primaryCta={{ href: '/shop/products', label: 'Esplora catalogo' }}
+    secondaryCta={{ href: '#best-seller', label: 'Vai ai best seller' }}
+    note="Contenuto demo: ingredienti e promesse sono descrittivi, non clinici."
+  />
+
+  <TrustSection
+    eyebrow="Trust-first"
+    title="Elementi fiducia per e-commerce"
+    intro="Placeholder visivi per brand strip, metriche e testimonianze senza usare dati reali."
+    logos={['Brand One', 'Brand Two', 'Brand Three', 'Brand Four']}
+    metrics={[
+      { value: 'XX+', label: 'Ordini demo / mese', note: 'Placeholder' },
+      { value: 'YY%', label: 'Carrelli completati', note: 'Placeholder' },
+      { value: 'ZZ sec', label: 'Tempo medio checkout', note: 'Placeholder' },
+      { value: 'AA/5', label: 'Gradimento UX', note: 'Placeholder' }
+    ]}
+    quote="Placeholder recensione: processo semplice, microcopy utile, checkout senza frizioni."
+    quoteAuthor="Cliente demo"
+  />
+
+  <BentoFeatures
+    eyebrow="Bento commerce"
+    title="Feature grid modulare con card dominante"
+    intro="La card dominante comunica la proposta centrale; le altre riducono indecisione su routine e acquisto."
+    items={[
+      {
+        icon: 'KIT',
+        title: 'Routine builder in evidenza',
+        body: 'Card dominante per guidare la scelta in base al momento della giornata.',
+        dominant: true
+      },
+      {
+        icon: 'INC',
+        title: 'INCI leggibile',
+        body: 'Dettagli ingredienti sempre accessibili prima dell acquisto.'
+      },
+      {
+        icon: 'REV',
+        title: 'Microcopy orientativo',
+        body: 'Testi brevi che spiegano uso, texture e compatibilita in modo neutro.'
+      },
+      {
+        icon: 'CRT',
+        title: 'Aggiunta al carrello rapida',
+        body: 'Feedback CTA immediato, senza popup invasivi.'
+      },
+      {
+        icon: 'CHK',
+        title: 'Checkout in step',
+        body: 'Percorso guidato in tre passaggi con controllo campi obbligatori.'
+      }
+    ]}
+  />
+
+  <section class="section container" data-reveal>
+    <div class="section-head">
+      <p class="eyebrow">Organic layout</p>
+      <h2>Composizione asimmetrica per orientare la scelta</h2>
+      <p class="section-intro">Blocco principale per la proposta e side panel per rassicurazioni veloci su spedizione e resi.</p>
+    </div>
+
+    <div class="organic-layout">
+      <article class="card hover-lift" data-reveal>
+        <h3>Mini guida routine</h3>
+        <p>Mattina: detergente + idratazione leggera.</p>
+        <p>Sera: detersione + trattamento mirato + crema barriera.</p>
+        <p>Settimana: 1-2 step intensivi in base alla sensibilita personale.</p>
+      </article>
+
+      <aside class="organic-side">
+        <article class="card card--soft hover-lift" data-reveal>
+          <h3>Spedizione demo</h3>
+          <p>Template pronto per policy trasparenti e link legali sempre visibili.</p>
+        </article>
+        <article class="card card--soft hover-lift" data-reveal>
+          <h3>Resi demo</h3>
+          <p>Microcopy non ambiguo per ridurre ticket e richieste duplicate.</p>
+        </article>
+      </aside>
+    </div>
   </section>
-  <section class="section container">
-    <h2>Best seller</h2>
+
+  <LeadWizard
+    id="shop-lead"
+    title="Ricevi una routine suggerita"
+    intro="Wizard 3 step per contatto commerciale: nome, email e bisogno skincare principale."
+    needs={['Pelle secca', 'Pelle mista', 'Pelle sensibile']}
+    submitLabel="Invia contatto"
+  />
+
+  <section id="best-seller" class="section container" data-reveal>
+    <div class="section-head">
+      <p class="eyebrow">Best seller</p>
+      <h2>Prodotti in evidenza</h2>
+      <p class="section-intro">Card prodotto ottimizzate per mobile con immagini responsive e CTA ad alto contrasto.</p>
+    </div>
+
     <div class="grid md-4">
       {featured.map((product) => <ProductCard product={product} />)}
     </div>
+
+    <p id="shop-feedback" class="wizard-status" aria-live="polite"></p>
   </section>
+
   <script is:inline set:html={cartScript}></script>
   <script is:inline>
-    document.querySelectorAll('.add-to-cart').forEach((button) => {
-      button.addEventListener('click', () => {
-        window.shopCart.addToCart(JSON.parse(button.dataset.product));
-        alert('Prodotto aggiunto al carrello.');
+    (() => {
+      const feedback = document.getElementById('shop-feedback');
+
+      document.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const button = target.closest('.add-to-cart');
+        if (!(button instanceof HTMLButtonElement)) return;
+
+        try {
+          const payload = JSON.parse(button.dataset.product || '{}');
+          window.shopCart.addToCart(payload);
+          if (feedback) feedback.textContent = `${payload.name} aggiunto al carrello (demo).`;
+        } catch {
+          if (feedback) feedback.textContent = 'Errore nel caricamento del prodotto demo.';
+        }
       });
-    });
+    })();
   </script>
 </MainLayout>
+

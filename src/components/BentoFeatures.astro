@@ -1,0 +1,39 @@
+﻿---
+type BentoItem = {
+  title: string;
+  body: string;
+  icon: string;
+  dominant?: boolean;
+};
+
+const {
+  id,
+  eyebrow = 'Focus',
+  title,
+  intro,
+  items
+} = Astro.props as {
+  id?: string;
+  eyebrow?: string;
+  title: string;
+  intro: string;
+  items: BentoItem[];
+};
+---
+<section id={id} class="section container" data-reveal>
+  <div class="section-head">
+    <p class="eyebrow">{eyebrow}</p>
+    <h2>{title}</h2>
+    <p class="section-intro">{intro}</p>
+  </div>
+
+  <div class="bento">
+    {items.map((item) => (
+      <article class={`card bento-card hover-lift ${item.dominant ? 'bento-card--dominant' : ''}`} data-reveal>
+        <span class="bento-icon" aria-hidden="true">{item.icon}</span>
+        <h3>{item.title}</h3>
+        <p>{item.body}</p>
+      </article>
+    ))}
+  </div>
+</section>

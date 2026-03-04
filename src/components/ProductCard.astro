@@ -1,15 +1,26 @@
----
+﻿---
 import type { Product } from '@/data/products';
+
 const { product } = Astro.props as { product: Product };
 ---
-<article class="card">
-  <img src={product.image} alt={product.name} style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;" loading="lazy" />
-  <p style="margin:.5rem 0 0;color:var(--muted);font-size:.9rem;">{product.category}</p>
-  <h3 style="margin:.2rem 0;">{product.name}</h3>
+<article class="card product-card hover-lift" data-reveal>
+  <img
+    src={product.image}
+    alt={product.name}
+    width="600"
+    height="380"
+    loading="lazy"
+    decoding="async"
+    style="aspect-ratio: 4 / 3; object-fit: cover;"
+  />
+
+  <p class="muted">{product.category}</p>
+  <h3>{product.name}</h3>
   <p>{product.shortDescription}</p>
-  <p><strong>€ {product.price.toFixed(2)}</strong></p>
-  <div style="display:flex; gap:.6rem;">
+  <p><strong>EUR {product.price.toFixed(2)}</strong></p>
+
+  <div class="hero-actions">
     <a class="btn btn--ghost" href={`/shop/products/${product.slug}`}>Dettagli</a>
-    <button class="btn add-to-cart" data-product={JSON.stringify(product)}>Aggiungi</button>
+    <button class="btn add-to-cart" data-product={JSON.stringify(product)} type="button">Aggiungi</button>
   </div>
 </article>

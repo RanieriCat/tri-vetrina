@@ -1,7 +1,8 @@
----
+﻿---
 import '@/styles/global.css';
-import TemplateSwitcher from '@/components/TemplateSwitcher.astro';
+import ColorModeToggle from '@/components/ColorModeToggle.astro';
 import SeoHead from '@/components/SeoHead.astro';
+import TemplateSwitcher from '@/components/TemplateSwitcher.astro';
 import { templates, type TemplateKey } from '@/config/templates';
 
 const {
@@ -22,30 +23,88 @@ const {
 
 const pathname = Astro.url.pathname;
 ---
-<html lang="it" data-theme={template}>
+<html lang="it" data-theme={template} data-color-mode="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <SeoHead title={title} description={description} />
+    <script is:inline>
+      (() => {
+        const root = document.documentElement;
+        root.classList.add('js');
+
+        try {
+          const stored = localStorage.getItem('preferred-color-mode');
+          if (stored === 'light' || stored === 'dark') {
+            root.dataset.colorMode = stored;
+            return;
+          }
+        } catch {
+          // Ignore private-mode/localStorage errors.
+        }
+
+        const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches;
+        root.dataset.colorMode = prefersDark ? 'dark' : 'light';
+      })();
+    </script>
   </head>
   <body>
     <header class="header">
       <div class="container header-row">
-        <strong>{templates[template].label}</strong>
+        <a href={templates[template].home} class="brand">{templates[template].label}</a>
+
         <nav class="nav" aria-label="Navigazione principale">
           {nav.map((item) => (
             <a href={item.href} class={pathname === item.href ? 'active' : ''}>{item.label}</a>
           ))}
         </nav>
-        <TemplateSwitcher currentTemplate={template} />
+
+        <div class="header-tools">
+          <TemplateSwitcher currentTemplate={template} />
+          <ColorModeToggle />
+        </div>
       </div>
     </header>
+
     <main><slot /></main>
+
     <footer class="footer">
       <div class="container">
         <p>{footerText}</p>
         {footerHtml && <div set:html={footerHtml}></div>}
       </div>
     </footer>
+
+    <script is:inline>
+      (() => {
+        const revealNodes = Array.from(document.querySelectorAll('[data-reveal]'));
+        if (!revealNodes.length) return;
+
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (reduceMotion || typeof IntersectionObserver === 'undefined') {
+          revealNodes.forEach((node) => node.classList.add('is-visible'));
+          return;
+        }
+
+        const observer = new IntersectionObserver(
+          (entries, obs) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add('is-visible');
+              obs.unobserve(entry.target);
+            });
+          },
+          {
+            threshold: 0.14,
+            rootMargin: '0px 0px -8% 0px'
+          }
+        );
+
+        revealNodes.forEach((node, index) => {
+          node.style.setProperty('--reveal-delay', `${Math.min(index * 55, 250)}ms`);
+          observer.observe(node);
+        });
+      })();
+    </script>
   </body>
 </html>

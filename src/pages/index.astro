@@ -1,18 +1,32 @@
----
+﻿---
+const fallbackPath = '/doctor';
 ---
 <html lang="it">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Tri Vetrina</title>
+    <noscript><meta http-equiv="refresh" content={`0;url=${fallbackPath}`} /></noscript>
   </head>
   <body>
-    <p>Reindirizzamento in corso…</p>
+    <p>Reindirizzamento in corso...</p>
+    <p><a href={fallbackPath}>Vai alla Vetrina Dottore</a></p>
+
     <script is:inline>
-      const preferred = localStorage.getItem('preferred-template') || 'doctor';
-      const map = { doctor: '/doctor', shop: '/shop', psy: '/psy' };
-      window.location.replace(map[preferred] ?? '/doctor');
+      (() => {
+        const map = { doctor: '/doctor', shop: '/shop', psy: '/psy' };
+        let preferred = 'doctor';
+
+        try {
+          const stored = localStorage.getItem('preferred-template');
+          if (stored in map) preferred = stored;
+        } catch {
+          // Ignore private-mode/localStorage errors.
+        }
+
+        const destination = map[preferred] ?? '/doctor';
+        if (window.location.pathname !== destination) window.location.replace(destination);
+      })();
     </script>
-    <noscript><a href="/doctor">Vai al sito demo</a></noscript>
   </body>
 </html>

@@ -1,62 +1,137 @@
----
+﻿---
+import BentoFeatures from '@/components/BentoFeatures.astro';
+import LeadWizard from '@/components/LeadWizard.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
+import ProfileHero from '@/components/ProfileHero.astro';
+import TrustSection from '@/components/TrustSection.astro';
 ---
 <MainLayout
   template="doctor"
   title="Dott. Marco Rinaldi | Cardiologia"
   description="Specialista in cardiologia clinica con approccio preventivo e umano."
-  footerText="Questo sito è una demo. Le informazioni non sostituiscono il parere medico."
+  footerText="Questo sito e una demo. Le informazioni non sostituiscono il parere medico."
 >
-  <section class="hero container">
-    <h1>Dott. Marco Rinaldi</h1>
-    <p>Specialista in Cardiologia clinica e prevenzione cardiovascolare.</p>
-    <a href="#prenota" class="btn">Prenota una visita</a>
-  </section>
+  <ProfileHero
+    template="doctor"
+    kicker="Tri Vetrina / Dottore"
+    title="Cardiologia clinica con una UI chiara e orientata al primo contatto."
+    description="Demo mobile-first con linguaggio semplice: aiuta a capire servizi, percorso e modalita di prenotazione senza claim sensibili."
+    primaryCta={{ href: '#prenota', label: 'Avvia richiesta' }}
+    secondaryCta={{ href: '#servizi', label: 'Scopri i servizi' }}
+    note="Contenuto dimostrativo: nessuna diagnosi o consulenza medica online."
+  />
 
-  <section id="servizi" class="section container">
-    <h2>Servizi offerti</h2>
-    <div class="grid md-3">
-      <article class="card"><h3>Visita cardiologica</h3><p>Valutazione completa di anamnesi, fattori di rischio e sintomi.</p></article>
-      <article class="card"><h3>ECG a riposo</h3><p>Esame rapido per monitorare ritmo e attività elettrica del cuore.</p></article>
-      <article class="card"><h3>Follow-up prevenzione</h3><p>Piano personalizzato su alimentazione, attività fisica e monitoraggio.</p></article>
+  <TrustSection
+    eyebrow="Trust-first"
+    title="Fiducia sopra la piega"
+    intro="Logo strip, metriche e testimonianza sono placeholder: servono a mostrare la struttura conversion-first senza dati reali."
+    logos={['Studio A', 'Lab B', 'Network C', 'Centro D']}
+    metrics={[
+      { value: 'XX+', label: 'Richieste demo / mese', note: 'Placeholder' },
+      { value: 'YY%', label: 'Form completati', note: 'Placeholder' },
+      { value: 'ZZ min', label: 'Tempo medio risposta', note: 'Placeholder' },
+      { value: 'AA/5', label: 'Feedback percepito', note: 'Placeholder' }
+    ]}
+    quote="Placeholder testimonianza: comunicazione chiara, percorso comprensibile, tempi ben definiti."
+    quoteAuthor="Paziente demo"
+  />
+
+  <BentoFeatures
+    id="servizi"
+    eyebrow="Bento care"
+    title="Servizi presentati con gerarchia netta"
+    intro="Card modulari con una card dominante per guidare la scelta dal bisogno all'azione."
+    items={[
+      {
+        icon: 'ECG',
+        title: 'Visita cardiologica guidata',
+        body: 'Anamnesi, sintomi e priorita discussi in modo chiaro prima del piano successivo.',
+        dominant: true
+      },
+      {
+        icon: 'MON',
+        title: 'ECG a riposo',
+        body: 'Esame strumentale rapido per supportare il quadro clinico.'
+      },
+      {
+        icon: 'FUP',
+        title: 'Follow-up prevenzione',
+        body: 'Check periodico su abitudini e indicatori concordati nel tempo.'
+      },
+      {
+        icon: 'DOC',
+        title: 'Report sintetico',
+        body: 'Sintesi leggibile dei passaggi concordati e dei prossimi step.'
+      },
+      {
+        icon: 'CAL',
+        title: 'Agenda semplificata',
+        body: 'Preferenze orarie raccolte nel wizard per ridurre attrito di prenotazione.'
+      }
+    ]}
+  />
+
+  <section class="section container" data-reveal>
+    <div class="section-head">
+      <p class="eyebrow">Organic layout</p>
+      <h2>Percorso asimmetrico ma ordinato</h2>
+      <p class="section-intro">Layout controllato su due blocchi: contenuto principale a sinistra, supporto decisionale a destra.</p>
+    </div>
+
+    <div class="organic-layout">
+      <article class="card hover-lift" data-reveal>
+        <h3>Come funziona il primo contatto</h3>
+        <p>Step 1: raccolta dati minimi per inquadrare il bisogno.</p>
+        <p>Step 2: verifica disponibilita e conferma del canale di risposta.</p>
+        <p>Step 3: proposta appuntamento in orari compatibili.</p>
+      </article>
+
+      <aside class="organic-side">
+        <article class="card card--soft hover-lift" data-reveal>
+          <h3>Microcopy di supporto</h3>
+          <p>Usiamo copy breve, leggibile e non allarmistico per aumentare chiarezza e conversione.</p>
+        </article>
+        <article class="card card--soft hover-lift" data-reveal>
+          <h3>Iconografia coerente</h3>
+          <p>Tag visivi sobri (ECG, agenda, report) per orientare senza sovraccarico cognitivo.</p>
+        </article>
+      </aside>
     </div>
   </section>
 
-  <section id="prenota" class="section container">
-    <h2>Prenota appuntamento</h2>
-    <form id="doctor-form" class="card grid md-2" novalidate>
-      <label>Nome e cognome <input required name="nome" /></label>
-      <label>Email <input required type="email" name="email" /></label>
-      <label>Telefono <input required name="telefono" /></label>
-      <label>Data e ora preferita <input required type="datetime-local" name="slot" /></label>
-      <label style="grid-column:1/-1;">Messaggio <textarea name="messaggio" rows="4"></textarea></label>
-      <button class="btn" type="submit">Invia richiesta</button>
-      <p id="doctor-form-status" aria-live="polite"></p>
-    </form>
-  </section>
+  <LeadWizard
+    id="prenota"
+    title="Richiedi un primo contatto"
+    intro="Mini wizard 3 step con validazione base: nome, email, bisogno principale."
+    needs={['Visita cardiologica', 'ECG di controllo', 'Follow-up prevenzione']}
+    submitLabel="Invia richiesta"
+  />
 
-  <section id="contatti" class="section container">
-    <h2>Contatti</h2>
-    <div class="grid md-2">
-      <div class="card">
+  <section id="contatti" class="section container" data-reveal>
+    <div class="section-head">
+      <p class="eyebrow">Contatti</p>
+      <h2>Studio e recapiti</h2>
+      <p class="section-intro">Dati in formato demo, utili per test di UX e accessibilita.</p>
+    </div>
+
+    <div class="organic-layout">
+      <article class="card hover-lift" data-reveal>
         <p><strong>Telefono:</strong> +39 02 5555 7777</p>
         <p><strong>Email:</strong> studio@rinaldicuore.it</p>
         <p><strong>Indirizzo:</strong> Via Verdi 10, Milano</p>
+        <p class="muted">Orari demo: Lun-Ven 09:00 - 18:00</p>
+      </article>
+
+      <div class="card" data-reveal style="padding: 0; overflow: hidden;">
+        <iframe
+          class="iframe-map"
+          title="Mappa studio medico"
+          src="https://maps.google.com/maps?q=milano&t=&z=13&ie=UTF8&iwloc=&output=embed"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+        ></iframe>
       </div>
-      <iframe class="card" title="Mappa studio medico" src="https://maps.google.com/maps?q=milano&t=&z=13&ie=UTF8&iwloc=&output=embed" style="min-height:260px;width:100%;border:0;"></iframe>
     </div>
   </section>
-  <script is:inline>
-    const form = document.getElementById('doctor-form');
-    const statusEl = document.getElementById('doctor-form-status');
-    form?.addEventListener('submit', (event) => {
-      event.preventDefault();
-      if (!form.checkValidity()) {
-        statusEl.textContent = 'Controlla i campi obbligatori prima di inviare.';
-        return;
-      }
-      statusEl.textContent = 'Richiesta inviata. Ti ricontatteremo entro 24 ore.';
-      form.reset();
-    });
-  </script>
 </MainLayout>
+

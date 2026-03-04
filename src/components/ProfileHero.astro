@@ -1,0 +1,39 @@
+﻿---
+import HeroVisual from '@/components/HeroVisual.astro';
+import type { TemplateKey } from '@/config/templates';
+
+type HeroCta = { label: string; href: string };
+
+const {
+  template,
+  kicker,
+  title,
+  description,
+  primaryCta,
+  secondaryCta,
+  note = ''
+} = Astro.props as {
+  template: TemplateKey;
+  kicker: string;
+  title: string;
+  description: string;
+  primaryCta: HeroCta;
+  secondaryCta?: HeroCta;
+  note?: string;
+};
+---
+<section class="hero container">
+  <div class="hero-grid">
+    <div class="hero-copy" data-reveal>
+      <p class="eyebrow">{kicker}</p>
+      <h1 class="hero-title">{title}</h1>
+      <p class="hero-lede">{description}</p>
+      <div class="hero-actions">
+        <a class="btn" href={primaryCta.href}>{primaryCta.label}</a>
+        {secondaryCta && <a class="btn btn--ghost" href={secondaryCta.href}>{secondaryCta.label}</a>}
+      </div>
+      {note && <p class="hero-note">{note}</p>}
+    </div>
+    <HeroVisual template={template} />
+  </div>
+</section>

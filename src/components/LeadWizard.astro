@@ -1,0 +1,164 @@
+﻿---
+const {
+  id = 'lead-wizard',
+  title = 'Richiedi un contatto',
+  intro = 'Wizard demo in 3 step per raccolta lead.',
+  needs,
+  submitLabel = 'Invia richiesta'
+} = Astro.props as {
+  id?: string;
+  title?: string;
+  intro?: string;
+  needs: string[];
+  submitLabel?: string;
+};
+
+const formId = `${id}-form`;
+const statusId = `${id}-status`;
+const nameId = `${id}-name`;
+const emailId = `${id}-email`;
+const needId = `${id}-need`;
+const messageId = `${id}-message`;
+---
+<section id={id} class="section container" data-reveal>
+  <div class="card wizard-shell">
+    <div class="section-head">
+      <p class="eyebrow">Lead capture</p>
+      <h2>{title}</h2>
+      <p class="section-intro">{intro}</p>
+    </div>
+
+    <form id={formId} class="wizard" novalidate>
+      <ol class="wizard-progress" aria-label="Progresso richiesta">
+        <li class="wizard-step" data-step-marker="0" aria-current="step">1 Nome</li>
+        <li class="wizard-step" data-step-marker="1">2 Email</li>
+        <li class="wizard-step" data-step-marker="2">3 Bisogno</li>
+      </ol>
+
+      <div class="wizard-pane" data-step="0">
+        <label for={nameId}>
+          Nome e cognome
+          <input id={nameId} name="name" autocomplete="name" required minlength="2" />
+        </label>
+        <div class="wizard-actions">
+          <button class="btn" type="button" data-wizard-action="next">Continua</button>
+        </div>
+      </div>
+
+      <div class="wizard-pane" data-step="1" hidden>
+        <label for={emailId}>
+          Email
+          <input id={emailId} name="email" type="email" autocomplete="email" required />
+        </label>
+        <div class="wizard-actions">
+          <button class="btn btn--ghost" type="button" data-wizard-action="prev">Indietro</button>
+          <button class="btn" type="button" data-wizard-action="next">Continua</button>
+        </div>
+      </div>
+
+      <div class="wizard-pane" data-step="2" hidden>
+        <label for={needId}>
+          Di cosa hai bisogno
+          <select id={needId} name="need" required>
+            <option value="">Seleziona un bisogno</option>
+            {needs.map((need) => (
+              <option value={need}>{need}</option>
+            ))}
+          </select>
+        </label>
+
+        <label for={messageId}>
+          Messaggio (opzionale)
+          <textarea id={messageId} name="message" rows="4" placeholder="Scrivi in breve il contesto"></textarea>
+        </label>
+
+        <div class="wizard-actions">
+          <button class="btn btn--ghost" type="button" data-wizard-action="prev">Indietro</button>
+          <button class="btn" type="submit">{submitLabel}</button>
+        </div>
+      </div>
+
+      <p id={statusId} class="wizard-status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+
+<script is:inline define:vars={{ formId, statusId }}>
+  (() => {
+    const form = document.getElementById(formId);
+    if (!(form instanceof HTMLFormElement)) return;
+
+    const panes = Array.from(form.querySelectorAll('[data-step]'));
+    const markers = Array.from(form.querySelectorAll('[data-step-marker]'));
+    const status = document.getElementById(statusId);
+    let step = 0;
+
+    const inputsForStep = (index) => {
+      const pane = panes[index];
+      if (!pane) return [];
+      return Array.from(pane.querySelectorAll('input, select, textarea'));
+    };
+
+    const setStep = (nextStep) => {
+      step = Math.max(0, Math.min(nextStep, panes.length - 1));
+
+      panes.forEach((pane, paneIndex) => {
+        pane.hidden = paneIndex !== step;
+      });
+
+      markers.forEach((marker, markerIndex) => {
+        if (markerIndex === step) marker.setAttribute('aria-current', 'step');
+        else marker.removeAttribute('aria-current');
+      });
+
+      if (status) status.textContent = '';
+    };
+
+    const validateStep = () => {
+      const controls = inputsForStep(step);
+      for (const control of controls) {
+        if (!control.checkValidity()) {
+          control.reportValidity();
+          return false;
+        }
+      }
+      return true;
+    };
+
+    form.addEventListener('click', (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      const actionButton = target.closest('[data-wizard-action]');
+      if (!(actionButton instanceof HTMLElement)) return;
+
+      const action = actionButton.getAttribute('data-wizard-action');
+      if (action === 'next') {
+        if (!validateStep()) {
+          if (status) status.textContent = 'Controlla il campo richiesto per continuare.';
+          return;
+        }
+        setStep(step + 1);
+        return;
+      }
+
+      if (action === 'prev') {
+        setStep(step - 1);
+      }
+    });
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        if (status) status.textContent = 'Verifica i campi obbligatori prima di inviare.';
+        return;
+      }
+
+      if (status) status.textContent = 'Richiesta registrata (demo). Ti contattiamo presto.';
+      form.reset();
+      setStep(0);
+    });
+
+    setStep(0);
+  })();
+</script>

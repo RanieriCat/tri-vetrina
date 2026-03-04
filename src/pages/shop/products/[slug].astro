@@ -1,4 +1,4 @@
----
+﻿---
 import MainLayout from '@/layouts/MainLayout.astro';
 import { products } from '@/data/products';
 import { cartScript } from '@/utils/cart';
@@ -8,22 +8,46 @@ export const getStaticPaths = () => products.map((product) => ({ params: { slug:
 const { product } = Astro.props;
 ---
 <MainLayout footerHtml={shopFooterHtml} template="shop" title={`${product.name} | Lifestyle e Creme`} description={product.shortDescription}>
-  <section class="section container grid md-2">
-    <img src={product.image} alt={product.name} class="card" style="width:100%;aspect-ratio:4/3;object-fit:cover;" />
-    <div class="card">
-      <p style="color:var(--muted);">{product.category}</p>
+  <section class="section container grid md-2" data-reveal>
+    <img
+      src={product.image}
+      alt={product.name}
+      class="card"
+      width="600"
+      height="380"
+      loading="eager"
+      decoding="async"
+      style="width: 100%; aspect-ratio: 4 / 3; object-fit: cover;"
+    />
+
+    <div class="card" data-reveal>
+      <p class="muted">{product.category}</p>
       <h1>{product.name}</h1>
       <p>{product.shortDescription}</p>
-      <p><strong>€ {product.price.toFixed(2)}</strong></p>
+      <p><strong>EUR {product.price.toFixed(2)}</strong></p>
       <h2>Ingredienti / INCI</h2>
       <p>{product.inci}</p>
-      <button class="btn" id="detail-add" data-product={JSON.stringify(product)}>Aggiungi al carrello</button>
+      <button class="btn" id="detail-add" data-product={JSON.stringify(product)} type="button">Aggiungi al carrello</button>
+      <p id="detail-status" class="wizard-status" aria-live="polite"></p>
     </div>
   </section>
+
   <script is:inline set:html={cartScript}></script>
   <script is:inline>
-    document.getElementById('detail-add')?.addEventListener('click', (event) => {
-      window.shopCart.addToCart(JSON.parse(event.currentTarget.dataset.product));
-    });
+    (() => {
+      const button = document.getElementById('detail-add');
+      const status = document.getElementById('detail-status');
+      if (!(button instanceof HTMLButtonElement)) return;
+
+      button.addEventListener('click', () => {
+        try {
+          const payload = JSON.parse(button.dataset.product || '{}');
+          window.shopCart.addToCart(payload);
+          if (status) status.textContent = `${payload.name} aggiunto al carrello (demo).`;
+        } catch {
+          if (status) status.textContent = 'Errore nel caricamento del prodotto demo.';
+        }
+      });
+    })();
   </script>
 </MainLayout>

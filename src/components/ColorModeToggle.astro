@@ -1,0 +1,42 @@
+﻿<button id="mode-toggle" class="mode-toggle" type="button" aria-pressed="false" aria-label="Passa al tema scuro">
+  <span data-mode-label>Chiaro</span>
+</button>
+<script is:inline>
+  (() => {
+    const key = 'preferred-color-mode';
+    const root = document.documentElement;
+    const button = document.getElementById('mode-toggle');
+    if (!button) return;
+
+    const label = button.querySelector('[data-mode-label]');
+
+    const readStoredMode = () => {
+      try {
+        const stored = localStorage.getItem(key);
+        if (stored === 'light' || stored === 'dark') return stored;
+      } catch {
+        // Ignore private-mode/localStorage errors.
+      }
+      return null;
+    };
+
+    const applyMode = (mode) => {
+      root.dataset.colorMode = mode;
+      button.setAttribute('aria-pressed', String(mode === 'dark'));
+      button.setAttribute('aria-label', mode === 'dark' ? 'Passa al tema chiaro' : 'Passa al tema scuro');
+      if (label) label.textContent = mode === 'dark' ? 'Scuro' : 'Chiaro';
+    };
+
+    applyMode(readStoredMode() ?? root.dataset.colorMode ?? 'light');
+
+    button.addEventListener('click', () => {
+      const next = root.dataset.colorMode === 'dark' ? 'light' : 'dark';
+      applyMode(next);
+      try {
+        localStorage.setItem(key, next);
+      } catch {
+        // Ignore private-mode/localStorage errors.
+      }
+    });
+  })();
+</script>

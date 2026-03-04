@@ -1,0 +1,55 @@
+﻿---
+type Metric = {
+  label: string;
+  value: string;
+  note?: string;
+};
+
+const {
+  eyebrow = 'Trust-first',
+  title,
+  intro,
+  logos,
+  metrics,
+  quote,
+  quoteAuthor
+} = Astro.props as {
+  eyebrow?: string;
+  title: string;
+  intro: string;
+  logos: string[];
+  metrics: Metric[];
+  quote: string;
+  quoteAuthor: string;
+};
+---
+<section class="section container trust-stack" data-reveal>
+  <div class="card">
+    <div class="section-head">
+      <p class="eyebrow">{eyebrow}</p>
+      <h2>{title}</h2>
+      <p class="section-intro">{intro}</p>
+    </div>
+
+    <div class="logo-strip" aria-label="Logo strip placeholder">
+      {logos.map((logo) => (
+        <span class="logo-pill" aria-label={`Placeholder logo ${logo}`}>{logo}</span>
+      ))}
+    </div>
+
+    <div class="metric-row" aria-label="Metriche demo">
+      {metrics.map((metric) => (
+        <article class="metric" data-reveal>
+          <strong>{metric.value}</strong>
+          <p>{metric.label}</p>
+          {metric.note && <small>{metric.note}</small>}
+        </article>
+      ))}
+    </div>
+
+    <blockquote class="quote" aria-label="Testimonianza placeholder">
+      <p>{quote}</p>
+      <cite>{quoteAuthor}</cite>
+    </blockquote>
+  </div>
+</section>
