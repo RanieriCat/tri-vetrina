@@ -1,104 +1,246 @@
 ﻿---
-import BentoFeatures from '@/components/BentoFeatures.astro';
 import LeadWizard from '@/components/LeadWizard.astro';
 import MainLayout from '@/layouts/MainLayout.astro';
-import ProfileHero from '@/components/ProfileHero.astro';
 import TrustSection from '@/components/TrustSection.astro';
+
+const mosaicTiles = [
+  {
+    title: 'Editoriale Luce Naturale',
+    tag: 'Magazine',
+    image: 'https://picsum.photos/seed/photo-mosaic-01/1400/1000',
+    size: 'l'
+  },
+  {
+    title: 'Campagna Capsule',
+    tag: 'Commerciale',
+    image: 'https://picsum.photos/seed/photo-mosaic-02/1000/900',
+    size: 'm'
+  },
+  {
+    title: 'Ritratto Soft',
+    tag: 'Portrait',
+    image: 'https://picsum.photos/seed/photo-mosaic-03/900/1200',
+    size: 's'
+  },
+  {
+    title: 'Evento Serale',
+    tag: 'Live',
+    image: 'https://picsum.photos/seed/photo-mosaic-04/1400/1000',
+    size: 'm'
+  },
+  {
+    title: 'Product Still',
+    tag: 'E-commerce',
+    image: 'https://picsum.photos/seed/photo-mosaic-05/1200/900',
+    size: 's'
+  },
+  {
+    title: 'Story Brand',
+    tag: 'Lifestyle',
+    image: 'https://picsum.photos/seed/photo-mosaic-06/1400/1000',
+    size: 'm'
+  }
+];
+
+const chapters = [
+  {
+    chapter: 'Capitolo 01',
+    title: 'Matrimoni Intimi',
+    body: 'Narrazione discreta della giornata: dettagli, persone e luce ambiente con ritmo cinematografico.',
+    meta: 'Output demo: teaser social + selezione estesa in gallery privata.',
+    image: 'https://picsum.photos/seed/photo-story-01/1400/900'
+  },
+  {
+    chapter: 'Capitolo 02',
+    title: 'Ritratto Professionale',
+    body: 'Set guidato per founder, team e creator. Posa naturale, direzione semplice e coerenza visiva.',
+    meta: 'Output demo: headshot, mezzi busti e formato verticale per profili.',
+    image: 'https://picsum.photos/seed/photo-story-02/1400/900'
+  },
+  {
+    chapter: 'Capitolo 03',
+    title: 'Commerciale Prodotto',
+    body: 'Scatti orientati alla conversione: texture leggibili, color grading consistente, varianti per ADV.',
+    meta: 'Output demo: marketplace, social ads e hero shop.',
+    image: 'https://picsum.photos/seed/photo-story-03/1400/900'
+  },
+  {
+    chapter: 'Capitolo 04',
+    title: 'Eventi & Backstage',
+    body: 'Sequenza dinamica in tempo reale: momenti chiave, atmosphere shots e recap pronto alla pubblicazione.',
+    meta: 'Output demo: set rapido per PR, newsroom e social recap.',
+    image: 'https://picsum.photos/seed/photo-story-04/1400/900'
+  }
+];
 ---
-<MainLayout template="photo" title="Luca Ferretti | Fotografo" description="Fotografia lifestyle, eventi e ritratto con direzione creativa mobile-first.">
-  <ProfileHero
-    template="photo"
-    kicker="Tri Vetrina / Fotografo"
-    title="Scatti narrativi con estetica editoriale e conversione orientata al contatto."
-    description="UI mobile-first con tipografia oversize, palette calda e ritmo visivo chiaro per portare l utente dal portfolio alla richiesta in pochi passaggi."
-    primaryCta={{ href: '#photo-lead', label: 'Richiedi disponibilita' }}
-    secondaryCta={{ href: '/photo/portfolio', label: 'Apri portfolio' }}
-    note="Contenuto demo: metriche e referenze sono placeholder, senza dati reali verificati."
-  />
+<MainLayout template="photo" title="Luca Ferretti | Fotografo Editoriale" description="Portfolio fotografico editoriale con storytelling, mosaico modulare e lead capture mobile-first.">
+  <section class="photo-hero photo-texture" aria-labelledby="photo-hero-title">
+    <img
+      class="photo-hero-media"
+      data-photo-parallax
+      src="https://picsum.photos/seed/photo-hero-editorial/2400/1400"
+      alt="Fotografo al lavoro durante uno shooting editoriale"
+      width="2400"
+      height="1400"
+      fetchpriority="high"
+      decoding="async"
+    />
+    <div class="photo-hero-vignette" aria-hidden="true"></div>
+
+    <div class="container photo-hero-content" data-reveal>
+      <p class="eyebrow">Tri Vetrina / Fotografo</p>
+      <h1 id="photo-hero-title" class="photo-hero-title" data-variable-type>
+        Luce. Pelle. Materia.
+      </h1>
+      <p class="photo-hero-lede">
+        Fotografia editoriale e commerciale con approccio narrativo: pochi elementi, gerarchie nette, resa premium.
+      </p>
+      <div class="hero-actions">
+        <a class="btn" href="#photo-lead">Richiedi disponibilita</a>
+        <a class="btn btn--ghost" href="/photo/portfolio">Vedi portfolio completo</a>
+      </div>
+    </div>
+  </section>
 
   <TrustSection
     eyebrow="Trust-first"
-    title="Elementi fiducia sopra la piega"
-    intro="Logo strip, metriche e testimonianza sono placeholders strutturali per testare credibilita e conversione."
-    logos={['Agency A', 'Studio B', 'Event C', 'Brand D']}
+    title="Credibilita immediata, senza overload"
+    intro="Struttura trust sopra la piega con placeholders: utile a testare conversione e ordine informativo del portfolio."
+    logos={['Studio One', 'Brand Two', 'Agency Three', 'Event Four']}
     metrics={[
-      { value: 'XX+', label: 'Shooting demo / anno', note: 'Placeholder' },
-      { value: 'YY%', label: 'Lead completati', note: 'Placeholder' },
-      { value: 'ZZ h', label: 'Prima risposta media', note: 'Placeholder' },
-      { value: 'AA/5', label: 'Feedback esperienza', note: 'Placeholder' }
+      { value: 'XX+', label: 'Produzioni demo / anno', note: 'Placeholder' },
+      { value: 'YY%', label: 'Lead qualificati', note: 'Placeholder' },
+      { value: 'ZZ h', label: 'Tempo medio risposta', note: 'Placeholder' },
+      { value: 'AA/5', label: 'Percezione qualita', note: 'Placeholder' }
     ]}
-    quote="Placeholder testimonianza: comunicazione rapida, direzione chiara e consegna ordinata."
+    quote="Placeholder testimonianza: esperienza premium, direzione chiara, risultato coerente con il brand."
     quoteAuthor="Cliente demo"
-  />
-
-  <BentoFeatures
-    id="servizi"
-    eyebrow="Bento portfolio"
-    title="Feature grid con card dominante"
-    intro="La card principale guida verso il servizio ad alto valore; le card secondarie dettagliano output e processo."
-    items={[
-      {
-        icon: 'ART',
-        title: 'Shooting brand & editoriale',
-        body: 'Card dominante con focus su storytelling visivo, direzione creativa e coerenza feed.',
-        dominant: true
-      },
-      {
-        icon: 'EVT',
-        title: 'Eventi e backstage',
-        body: 'Copertura dinamica con selezione pronta per social e press kit.'
-      },
-      {
-        icon: 'POR',
-        title: 'Ritratti ambientati',
-        body: 'Sessioni guidate per professionisti, team e creator.'
-      },
-      {
-        icon: 'RET',
-        title: 'Post-produzione',
-        body: 'Color grading coerente e ottimizzazione multi-formato.'
-      },
-      {
-        icon: 'DEL',
-        title: 'Consegna smart',
-        body: 'Galleria condivisa con selezione e download ottimizzati.'
-      }
-    ]}
   />
 
   <section class="section container" data-reveal>
     <div class="section-head">
-      <p class="eyebrow">Organic layout</p>
-      <h2>Asimmetria controllata, leggibile su mobile</h2>
-      <p class="section-intro">Blocchi principali a sinistra e supporto operativo a destra per ridurre indecisione durante la valutazione del servizio.</p>
+      <p class="eyebrow">Mosaic bento</p>
+      <h2>Griglia modulare ordinata</h2>
+      <p class="section-intro">Tre dimensioni ricorrenti (L/M/S) per mostrare serie diverse senza perdere coerenza visuale.</p>
     </div>
 
-    <div class="organic-layout">
-      <article class="card hover-lift" data-reveal>
-        <h3>Workflow rapido</h3>
-        <p>1. Brief sintetico con obiettivi e mood.</p>
-        <p>2. Produzione shooting con shotlist condivisa.</p>
-        <p>3. Selezione finale e consegna in galleria cloud.</p>
-      </article>
+    <div class="mosaic" aria-label="Anteprima portfolio modulare">
+      {mosaicTiles.map((tile, index) => (
+        <article class={`mosaic-tile mosaic-tile--${tile.size} photo-texture photo-breath ${index === 0 ? 'tilt-accent' : ''}`} data-reveal data-tilt={index === 0 ? 'true' : undefined}>
+          <img
+            src={tile.image}
+            alt={tile.title}
+            width="1400"
+            height="1000"
+            loading="lazy"
+            decoding="async"
+          />
+          <div class="mosaic-meta">
+            <p>{tile.tag}</p>
+            <h3>{tile.title}</h3>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
 
-      <aside class="organic-side">
-        <article class="card card--soft hover-lift" data-reveal>
-          <h3>Microcopy orientato al cliente</h3>
-          <p>Copy breve, concreto e senza tecnicismi inutili per aumentare la chiarezza decisionale.</p>
+  <section class="section container" data-reveal>
+    <div class="section-head">
+      <p class="eyebrow">Story sequence</p>
+      <h2>Portfolio in capitoli</h2>
+      <p class="section-intro">Scroll narrativo in 4 blocchi: ogni capitolo ha un immagine chiave e una promessa chiara di output.</p>
+    </div>
+
+    <div class="story-sequence">
+      {chapters.map((chapter, index) => (
+        <article class={`story-chapter ${index % 2 === 1 ? 'story-chapter--reverse' : ''}`} data-reveal>
+          <figure class={`story-media photo-texture ${index === 2 ? 'tilt-accent' : ''}`} data-tilt={index === 2 ? 'true' : undefined}>
+            <img
+              src={chapter.image}
+              alt={chapter.title}
+              width="1400"
+              height="900"
+              loading="lazy"
+              decoding="async"
+            />
+          </figure>
+          <div class="story-copy">
+            <p class="eyebrow">{chapter.chapter}</p>
+            <h3>{chapter.title}</h3>
+            <p>{chapter.body}</p>
+            <p class="muted">{chapter.meta}</p>
+          </div>
         </article>
-        <article class="card card--soft hover-lift" data-reveal>
-          <h3>Iconografia coerente</h3>
-          <p>Tag visivi semplici per servizio, output e tempi di consegna.</p>
-        </article>
-      </aside>
+      ))}
     </div>
   </section>
 
   <LeadWizard
     id="photo-lead"
     title="Raccontami il tuo progetto"
-    intro="Wizard 3 step con validazione base: nome, email e tipo di shooting richiesto."
-    needs={['Shooting brand', 'Evento', 'Ritratto professionale']}
+    intro="Wizard 3 step con validazione base: nome, email e tipo di shooting."
+    needs={['Matrimonio', 'Ritratto professionale', 'Produzione commerciale']}
     submitLabel="Invia richiesta"
   />
+
+  <script is:inline>
+    (() => {
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const heroMedia = document.querySelector('[data-photo-parallax]');
+      const variableTitle = document.querySelector('[data-variable-type]');
+      let ticking = false;
+
+      const applyScrollEffects = () => {
+        const progress = Math.min(window.scrollY / 440, 1);
+
+        if (heroMedia instanceof HTMLElement) {
+          heroMedia.style.transform = `scale(1.06) translate3d(0, ${progress * 26}px, 0)`;
+        }
+
+        if (variableTitle instanceof HTMLElement) {
+          const weight = Math.round(780 - progress * 220);
+          const track = (-0.055 + progress * 0.022).toFixed(3);
+          variableTitle.style.setProperty('--photo-wght', String(weight));
+          variableTitle.style.setProperty('--photo-track', `${track}em`);
+        }
+
+        ticking = false;
+      };
+
+      const onScroll = () => {
+        if (reduceMotion || ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(applyScrollEffects);
+      };
+
+      if (!reduceMotion) {
+        applyScrollEffects();
+        window.addEventListener('scroll', onScroll, { passive: true });
+      }
+
+      const canTilt = !reduceMotion && window.matchMedia('(pointer: fine)').matches;
+      if (!canTilt) return;
+
+      const tiltTargets = Array.from(document.querySelectorAll('[data-tilt]'));
+      tiltTargets.forEach((target) => {
+        if (!(target instanceof HTMLElement)) return;
+
+        const onMove = (event) => {
+          const rect = target.getBoundingClientRect();
+          const x = (event.clientX - rect.left) / rect.width - 0.5;
+          const y = (event.clientY - rect.top) / rect.height - 0.5;
+          target.style.setProperty('--tilt-y', `${(x * 6).toFixed(2)}deg`);
+          target.style.setProperty('--tilt-x', `${(-y * 6).toFixed(2)}deg`);
+        };
+
+        const reset = () => {
+          target.style.setProperty('--tilt-y', '0deg');
+          target.style.setProperty('--tilt-x', '0deg');
+        };
+
+        target.addEventListener('pointermove', onMove);
+        target.addEventListener('pointerleave', reset);
+      });
+    })();
+  </script>
 </MainLayout>
