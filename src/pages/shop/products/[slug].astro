@@ -3,6 +3,7 @@ import MainLayout from '@/layouts/MainLayout.astro';
 import { cartScript } from '@/utils/cart';
 import { shopFooterHtml } from '@/config/shop';
 import { getShopProducts } from '@/lib/shopify';
+import BuyNowButton from '@/components/BuyNowButton.astro';
 
 export const getStaticPaths = async () => {
   const products = await getShopProducts({ first: 60 });
@@ -132,8 +133,24 @@ const ugcItems = [
         </label>
 
         <div class="hero-actions">
-          <button class="btn" id="detail-add" data-product={JSON.stringify(product)} type="button">Aggiungi al carrello</button>
-          <a class="btn btn--ghost" href="/shop/checkout">Vai al checkout</a>
+          <button
+            class="btn"
+            id="detail-add"
+            data-product={JSON.stringify(product)}
+            data-slug={product.slug}
+            data-name={product.name}
+            data-price={String(product.price)}
+            data-category={product.category}
+            data-image={product.image}
+            data-short-description={product.shortDescription}
+            data-inci={product.inci}
+            data-variant-id={product.variantId ?? ''}
+            data-variant-title={product.variantTitle ?? ''}
+            type="button"
+          >
+            Aggiungi al carrello
+          </button>
+          {product.variantId ? <BuyNowButton variantId={product.variantId} className="btn btn--ghost" /> : <a class="btn btn--ghost" href="/shop/cart">Vai al carrello</a>}
         </div>
 
         <div class="shop-express-row" aria-label="Metodi pagamento express demo">
@@ -230,6 +247,54 @@ const ugcItems = [
       const detailShade = document.getElementById('detail-shade');
       const stickyShade = document.getElementById('sticky-shade');
       const status = document.getElementById('detail-status');
+      const ensureCartApi = () => {
+        if (window.shopCart && typeof window.shopCart.addToCart === 'function') return window.shopCart;
+
+        const key = 'shop-cart';
+        const readCart = () => {
+          try {
+            const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+            return Array.isArray(parsed) ? parsed : [];
+          } catch {
+            return [];
+          }
+        };
+        const writeCart = (cart) => localStorage.setItem(key, JSON.stringify(Array.isArray(cart) ? cart : []));
+        const itemKey = (item) => [item.slug, item.variant || 'base'].join('::');
+        const addToCart = (product) => {
+          const cart = readCart();
+          const found = cart.find((item) => itemKey(item) === itemKey(product));
+          if (found) found.qty = (Number(found.qty) || 1) + 1;
+          else cart.push({ ...product, qty: 1 });
+          writeCart(cart);
+        };
+
+        window.shopCart = { readCart, writeCart, addToCart };
+        return window.shopCart;
+      };
+      const parsePayload = (button) => {
+        try {
+          const parsed = JSON.parse(button.dataset.product || '{}');
+          if (parsed && parsed.slug) return parsed;
+        } catch {
+          // Fallback to dataset fields below.
+        }
+
+        const slug = (button.dataset.slug || '').trim();
+        if (!slug) return null;
+
+        return {
+          slug,
+          name: button.dataset.name || slug,
+          price: Number.parseFloat(button.dataset.price || '0'),
+          category: button.dataset.category || '',
+          image: button.dataset.image || '',
+          shortDescription: button.dataset.shortDescription || '',
+          inci: button.dataset.inci || '',
+          variantId: button.dataset.variantId || undefined,
+          variantTitle: button.dataset.variantTitle || undefined
+        };
+      };
 
       const syncShades = (source, target) => {
         if (!(source instanceof HTMLSelectElement) || !(target instanceof HTMLSelectElement)) return;
@@ -243,16 +308,16 @@ const ugcItems = [
 
       const addCurrentProduct = (variant = '') => {
         if (!(productButton instanceof HTMLButtonElement)) return;
-        if (!window.shopCart) return;
 
         try {
-          const payload = JSON.parse(productButton.dataset.product || '{}');
+          const payload = parsePayload(productButton);
+          if (!payload) throw new Error('Invalid product payload');
           const shade = detailShade instanceof HTMLSelectElement ? detailShade.value : 'Original';
           const finalVariant = variant || shade;
-          window.shopCart.addToCart({ ...payload, variant: finalVariant });
+          ensureCartApi().addToCart({ ...payload, variant: finalVariant });
           if (status) status.textContent = `${payload.name} · ${finalVariant} aggiunto al carrello (demo).`;
         } catch {
-          if (status) status.textContent = 'Errore nel caricamento del prodotto.';
+          if (status) status.textContent = 'Errore: impossibile aggiungere il prodotto al carrello.';
         }
       };
 

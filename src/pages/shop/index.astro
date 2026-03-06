@@ -220,9 +220,9 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
 
         <article class="card card--soft" data-reveal>
           <h3>Checkout senza attrito</h3>
-          <p>Express pay disponibile in checkout demo con tempi di consegna e reso sempre visibili.</p>
+          <p>Express pay disponibile in checkout Shopify con tempi di consegna e reso sempre visibili.</p>
           <p><strong>Consegna:</strong> 48-72h demo | <strong>Reso:</strong> 30 giorni demo</p>
-          <a class="btn btn--ghost" href="/shop/checkout">Vai al checkout</a>
+          <a class="btn btn--ghost" href="/shop/cart">Vai al checkout</a>
         </article>
       </div>
     </section>
@@ -254,13 +254,61 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
         allProducts.find((item) => keywordMatch(item, regex)) || allProducts[fallbackIndex] || null;
       const fragranceFree = (item) => !/parfum/i.test(item.inci || '');
       const veganFriendly = (item) => !/cera alba|beeswax|honey/i.test(item.inci || '');
+      const ensureCartApi = () => {
+        if (window.shopCart && typeof window.shopCart.addToCart === 'function') return window.shopCart;
+
+        const key = 'shop-cart';
+        const readCart = () => {
+          try {
+            const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+            return Array.isArray(parsed) ? parsed : [];
+          } catch {
+            return [];
+          }
+        };
+        const writeCart = (cart) => localStorage.setItem(key, JSON.stringify(Array.isArray(cart) ? cart : []));
+        const itemKey = (item) => [item.slug, item.variant || 'base'].join('::');
+        const addToCart = (product) => {
+          const cart = readCart();
+          const found = cart.find((item) => itemKey(item) === itemKey(product));
+          if (found) found.qty = (Number(found.qty) || 1) + 1;
+          else cart.push({ ...product, qty: 1 });
+          writeCart(cart);
+        };
+
+        window.shopCart = { readCart, writeCart, addToCart };
+        return window.shopCart;
+      };
+      const parsePayload = (button) => {
+        try {
+          const parsed = JSON.parse(button.dataset.product || '{}');
+          if (parsed && parsed.slug) return parsed;
+        } catch {
+          // Fallback to dataset fields below.
+        }
+
+        const slug = (button.dataset.slug || '').trim();
+        if (!slug) return null;
+
+        return {
+          slug,
+          name: button.dataset.name || slug,
+          price: Number.parseFloat(button.dataset.price || '0'),
+          category: button.dataset.category || '',
+          image: button.dataset.image || '',
+          shortDescription: button.dataset.shortDescription || '',
+          inci: button.dataset.inci || '',
+          variantId: button.dataset.variantId || undefined,
+          variantTitle: button.dataset.variantTitle || undefined
+        };
+      };
 
       const feedback = document.getElementById('shop-feedback');
       const addBySlug = (slug, variant = '') => {
         const item = bySlug(slug);
-        if (!item || !window.shopCart) return;
+        if (!item) return;
         const payload = variant ? { ...item, variant } : item;
-        window.shopCart.addToCart(payload);
+        ensureCartApi().addToCart(payload);
         if (feedback) feedback.textContent = `${payload.name}${variant ? ` · ${variant}` : ''} aggiunto al carrello (demo).`;
       };
 
@@ -278,11 +326,12 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
         if (!(button instanceof HTMLButtonElement)) return;
 
         try {
-          const payload = JSON.parse(button.dataset.product || '{}');
-          window.shopCart.addToCart(payload);
+          const payload = parsePayload(button);
+          if (!payload) throw new Error('Invalid product payload');
+          ensureCartApi().addToCart(payload);
           if (feedback) feedback.textContent = `${payload.name} aggiunto al carrello (demo).`;
         } catch {
-          if (feedback) feedback.textContent = 'Errore nel caricamento del prodotto.';
+          if (feedback) feedback.textContent = 'Errore: impossibile aggiungere il prodotto al carrello.';
         }
       });
 

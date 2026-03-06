@@ -1,4 +1,4 @@
-﻿export type Product = {
+export type Product = {
   slug: string;
   name: string;
   price: number;
@@ -6,6 +6,8 @@
   image: string;
   shortDescription: string;
   inci: string;
+  variantId?: string;
+  variantTitle?: string;
 };
 
 export const products: Product[] = [
@@ -100,3 +102,4 @@ export const products: Product[] = [
     inci: 'Cera Alba, Ricinus Communis Seed Oil, Shea Butter.'
   }
 ];
+

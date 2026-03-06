@@ -1,0 +1,68 @@
+---
+interface Props {
+  variantId: string;
+  quantity?: number;
+  label?: string;
+  className?: string;
+}
+
+const {
+  variantId,
+  quantity = 1,
+  label = 'Compra ora',
+  className = 'btn'
+} = Astro.props as Props;
+
+const shopifyClientConfig = {
+  storeDomain: import.meta.env.SHOPIFY_STORE_DOMAIN ?? '',
+  apiVersion: import.meta.env.SHOPIFY_API_VERSION ?? '',
+  storefrontToken: import.meta.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN ?? ''
+};
+---
+<button
+  type="button"
+  class={className}
+  data-shopify-buy-now
+  data-variant-id={variantId}
+  data-quantity={String(quantity)}
+>
+  {label}
+</button>
+
+<script is:inline define:vars={{ shopifyClientConfig }}>
+  // Expose config to client-side helper when env vars are server-only.
+  window.__SHOPIFY_CONFIG__ = shopifyClientConfig;
+</script>
+
+<script>
+  import { handleBuyNow } from '../lib/shopify';
+
+  if (document.documentElement.dataset.shopifyBuyNowBound !== 'true') {
+    document.documentElement.dataset.shopifyBuyNowBound = 'true';
+
+    document.addEventListener('click', async (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+
+      const button = target.closest('[data-shopify-buy-now]');
+      if (!(button instanceof HTMLButtonElement)) return;
+
+      const selectedVariantId = button.dataset.variantId || '';
+      const selectedQuantity = Number.parseInt(button.dataset.quantity || '1', 10);
+
+      if (!selectedVariantId) return;
+
+      const previousLabel = button.textContent;
+      button.disabled = true;
+      button.textContent = 'Reindirizzamento...';
+
+      try {
+        await handleBuyNow(selectedVariantId, selectedQuantity);
+      } catch (error) {
+        console.error('[shopify] Buy now failed', error);
+        button.disabled = false;
+        button.textContent = previousLabel || 'Compra ora';
+      }
+    });
+  }
+</script>

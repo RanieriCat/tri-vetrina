@@ -19,7 +19,7 @@ export const templates = {
       { href: '/shop', label: 'Home' },
       { href: '/shop/products', label: 'Prodotti' },
       { href: '/shop/cart', label: 'Carrello' },
-      { href: '/shop/checkout', label: 'Checkout' }
+      { href: '/shop/cart', label: 'Checkout Shopify' }
     ]
   },
   photo: {

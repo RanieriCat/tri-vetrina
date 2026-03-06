@@ -1,5 +1,6 @@
 ﻿---
 import type { Product } from '@/data/products';
+import BuyNowButton from '@/components/BuyNowButton.astro';
 
 const { product } = Astro.props as { product: Product };
 ---
@@ -21,6 +22,22 @@ const { product } = Astro.props as { product: Product };
 
   <div class="hero-actions">
     <a class="btn btn--ghost" href={`/shop/products/${product.slug}`}>Scopri</a>
-    <button class="btn add-to-cart" data-product={JSON.stringify(product)} type="button">Aggiungi al carrello</button>
+    {product.variantId ? <BuyNowButton variantId={product.variantId} /> : null}
+    <button
+      class="btn add-to-cart"
+      data-product={JSON.stringify(product)}
+      data-slug={product.slug}
+      data-name={product.name}
+      data-price={String(product.price)}
+      data-category={product.category}
+      data-image={product.image}
+      data-short-description={product.shortDescription}
+      data-inci={product.inci}
+      data-variant-id={product.variantId ?? ''}
+      data-variant-title={product.variantTitle ?? ''}
+      type="button"
+    >
+      Aggiungi al carrello
+    </button>
   </div>
 </article>

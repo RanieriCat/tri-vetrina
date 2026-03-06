@@ -1,58 +1,133 @@
-﻿---
+---
 import MainLayout from '@/layouts/MainLayout.astro';
 import { shopFooterHtml } from '@/config/shop';
 import { cartScript } from '@/utils/cart';
+
+const shopifyClientConfig = {
+  storeDomain: import.meta.env.SHOPIFY_STORE_DOMAIN ?? '',
+  apiVersion: import.meta.env.SHOPIFY_API_VERSION ?? '',
+  storefrontToken: import.meta.env.SHOPIFY_STOREFRONT_PUBLIC_TOKEN ?? ''
+};
 ---
-<MainLayout template="shop" title="Carrello | Lifestyle & Beauty" description="Controlla articoli, varianti e totale prima del checkout." footerHtml={shopFooterHtml}>
+<MainLayout template="shop" title="Carrello | Lifestyle & Beauty" description="Controlla articoli, varianti e prosegui al checkout Shopify." footerHtml={shopFooterHtml}>
   <section class="section container" data-reveal>
     <div class="section-head">
       <p class="eyebrow">Carrello</p>
       <h1>Il tuo carrello</h1>
-      <p class="section-intro">Controlla quantita e varianti, poi prosegui al checkout.</p>
+      <p class="section-intro">Controlla quantita e varianti, poi prosegui al checkout Shopify.</p>
     </div>
 
     <div id="cart-list" class="grid"></div>
     <p id="cart-total" style="font-size: 1.2rem;" aria-live="polite"></p>
-    <a class="btn" href="/shop/checkout">Vai al checkout</a>
+    <button class="btn" id="checkout-shopify" type="button">Vai al checkout Shopify</button>
+    <p id="checkout-status" class="wizard-status" aria-live="polite"></p>
   </section>
 
   <script is:inline set:html={cartScript}></script>
-  <script is:inline>
+  <script is:inline define:vars={{ shopifyClientConfig }}>
+    window.__SHOPIFY_CONFIG__ = shopifyClientConfig;
+  </script>
+  <script>
+    import { checkoutLocalCart } from '../../lib/shopify';
+
     (() => {
       const container = document.getElementById('cart-list');
       const totalEl = document.getElementById('cart-total');
+      const checkoutButton = document.getElementById('checkout-shopify');
+      const checkoutStatus = document.getElementById('checkout-status');
+
       if (!(container instanceof HTMLElement) || !(totalEl instanceof HTMLElement)) return;
 
+      const ensureCartApi = () => {
+        if (window.shopCart && typeof window.shopCart.readCart === 'function' && typeof window.shopCart.writeCart === 'function' && typeof window.shopCart.addToCart === 'function') {
+          return window.shopCart;
+        }
+
+        const key = 'shop-cart';
+        const toFinite = (value, fallback = 0) => {
+          const number = Number(value);
+          return Number.isFinite(number) ? number : fallback;
+        };
+        const toQty = (value) => {
+          const qty = Math.floor(toFinite(value, 1));
+          return qty > 0 ? qty : 1;
+        };
+        const sanitizeItem = (raw) => {
+          if (!raw || typeof raw !== 'object') return null;
+          const slug = String(raw.slug || '').trim();
+          if (!slug) return null;
+          return {
+            slug,
+            name: String(raw.name || slug),
+            price: toFinite(raw.price, 0),
+            category: String(raw.category || ''),
+            image: String(raw.image || ''),
+            shortDescription: String(raw.shortDescription || ''),
+            inci: String(raw.inci || ''),
+            variantId: raw.variantId ? String(raw.variantId) : undefined,
+            variantTitle: raw.variantTitle ? String(raw.variantTitle) : undefined,
+            variant: raw.variant ? String(raw.variant) : undefined,
+            qty: toQty(raw.qty)
+          };
+        };
+        const readCart = () => {
+          try {
+            const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+            if (!Array.isArray(parsed)) return [];
+            return parsed.map(sanitizeItem).filter(Boolean);
+          } catch {
+            return [];
+          }
+        };
+        const writeCart = (cart) => localStorage.setItem(key, JSON.stringify(Array.isArray(cart) ? cart : []));
+        const itemKey = (item) => [item.slug, item.variant || 'base'].join('::');
+        const addToCart = (product) => {
+          const safeProduct = sanitizeItem({ ...product, qty: 1 });
+          if (!safeProduct) throw new Error('Invalid product payload');
+          const cart = readCart();
+          const found = cart.find((item) => itemKey(item) === itemKey(safeProduct));
+          if (found) found.qty += 1;
+          else cart.push(safeProduct);
+          writeCart(cart);
+        };
+
+        window.shopCart = { readCart, writeCart, addToCart };
+        return window.shopCart;
+      };
+
       const update = (index, delta) => {
-        const cart = window.shopCart.readCart();
+        const cart = ensureCartApi().readCart();
         cart[index].qty += delta;
         if (cart[index].qty <= 0) cart.splice(index, 1);
-        window.shopCart.writeCart(cart);
+        ensureCartApi().writeCart(cart);
         render();
       };
 
       const removeItem = (index) => {
-        const cart = window.shopCart.readCart();
+        const cart = ensureCartApi().readCart();
         cart.splice(index, 1);
-        window.shopCart.writeCart(cart);
+        ensureCartApi().writeCart(cart);
         render();
       };
 
       const render = () => {
-        const cart = window.shopCart.readCart();
+        const cart = ensureCartApi().readCart();
 
         if (!cart.length) {
           container.innerHTML = '<p class="card">Il carrello e vuoto. Aggiungi un prodotto per iniziare.</p>';
           totalEl.textContent = 'Totale: EUR 0.00';
+          if (checkoutButton instanceof HTMLButtonElement) checkoutButton.disabled = true;
           return;
         }
+
+        if (checkoutButton instanceof HTMLButtonElement) checkoutButton.disabled = false;
 
         container.innerHTML = cart
           .map(
             (item, index) => `
               <article class="card" style="display:grid;grid-template-columns:1fr auto;gap:.8rem;align-items:center;">
                 <div>
-                  <h3>${item.name}${item.variant ? ` · ${item.variant}` : ''}</h3>
+                  <h3>${item.name}${item.variant ? ` � ${item.variant}` : ''}</h3>
                   <p>EUR ${item.price.toFixed(2)} x ${item.qty}</p>
                 </div>
                 <div class="hero-actions">
@@ -78,7 +153,46 @@ import { cartScript } from '@/utils/cart';
         });
       };
 
+      if (checkoutButton instanceof HTMLButtonElement) {
+        checkoutButton.addEventListener('click', async () => {
+          const cart = ensureCartApi().readCart();
+          if (!Array.isArray(cart) || !cart.length) {
+            if (checkoutStatus instanceof HTMLElement) checkoutStatus.textContent = 'Il carrello e vuoto.';
+            return;
+          }
+
+          checkoutButton.disabled = true;
+          if (checkoutStatus instanceof HTMLElement) checkoutStatus.textContent = 'Creazione checkout Shopify...';
+
+          try {
+            const checkoutCart = await checkoutLocalCart(
+              cart.map((item) => ({
+                variantId: item.variantId,
+                quantity: item.qty
+              }))
+            );
+            const checkoutUrl = checkoutCart.checkoutUrl;
+            console.log('checkoutUrl:', checkoutUrl);
+            try {
+              const parsed = new URL(checkoutUrl);
+              if (!parsed.pathname || parsed.pathname === '/') {
+                console.warn('[shopify] checkoutUrl looks like homepage, not checkout.', checkoutUrl);
+              }
+            } catch {
+              console.warn('[shopify] checkoutUrl is not a valid URL string.', checkoutUrl);
+            }
+            window.location.href = checkoutUrl;
+          } catch (error) {
+            const message = error instanceof Error ? error.message : 'Errore durante il checkout Shopify.';
+            if (checkoutStatus instanceof HTMLElement) checkoutStatus.textContent = message;
+            checkoutButton.disabled = false;
+          }
+        });
+      }
+
       render();
     })();
   </script>
 </MainLayout>
+
+
