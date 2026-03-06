@@ -1,10 +1,13 @@
 ﻿---
 import MainLayout from '@/layouts/MainLayout.astro';
-import { products } from '@/data/products';
 import { cartScript } from '@/utils/cart';
 import { shopFooterHtml } from '@/config/shop';
+import { getShopProducts } from '@/lib/shopify';
 
-export const getStaticPaths = () => products.map((product) => ({ params: { slug: product.slug }, props: { product } }));
+export const getStaticPaths = async () => {
+  const products = await getShopProducts({ first: 60 });
+  return products.map((product) => ({ params: { slug: product.slug }, props: { product } }));
+};
 const { product } = Astro.props;
 
 const clips = [

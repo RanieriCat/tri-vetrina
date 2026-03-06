@@ -1,9 +1,11 @@
 ﻿---
 import MainLayout from '@/layouts/MainLayout.astro';
-import { products } from '@/data/products';
 import ProductCard from '@/components/ProductCard.astro';
 import { cartScript } from '@/utils/cart';
 import { shopFooterHtml } from '@/config/shop';
+import { getShopProducts } from '@/lib/shopify';
+
+const products = await getShopProducts({ first: 60 });
 ---
 <MainLayout footerHtml={shopFooterHtml} template="shop" title="Prodotti | Lifestyle & Beauty" description="Catalogo skincare con formule pensate per routine quotidiane.">
   <section class="section container" data-reveal>

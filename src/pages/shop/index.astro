@@ -2,9 +2,10 @@
 import MainLayout from '@/layouts/MainLayout.astro';
 import ProductCard from '@/components/ProductCard.astro';
 import { cartScript } from '@/utils/cart';
-import { products } from '@/data/products';
+import { getShopProducts } from '@/lib/shopify';
 import { shopFooterHtml } from '@/config/shop';
 
+const products = await getShopProducts({ first: 24 });
 const featured = products.slice(0, 6);
 const dropDateISO = '2026-04-30T20:00:00+02:00';
 ---
@@ -247,6 +248,10 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
     (() => {
       const allProducts = Array.isArray(products) ? products : [];
       const bySlug = (slug) => allProducts.find((item) => item.slug === slug);
+      const searchText = (item) => `${item.name} ${item.shortDescription} ${item.category} ${item.inci}`.toLowerCase();
+      const keywordMatch = (item, regex) => regex.test(searchText(item));
+      const pickByKeywords = (regex, fallbackIndex = 0) =>
+        allProducts.find((item) => keywordMatch(item, regex)) || allProducts[fallbackIndex] || null;
       const fragranceFree = (item) => !/parfum/i.test(item.inci || '');
       const veganFriendly = (item) => !/cera alba|beeswax|honey/i.test(item.inci || '');
 
@@ -292,16 +297,21 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
       const routineResult = document.getElementById('shop-routine-result');
 
       const buildRoutine = ({ skin, goal, texture, prefs }) => {
-        const cleanser = allProducts.find((item) => item.slug === 'detergente-delicato');
-        const toner = allProducts.find((item) => item.slug === 'tonico-rose-balance');
-        const serum = allProducts.find((item) => item.slug === 'siero-ialuronico');
-        const glowCream = allProducts.find((item) => item.slug === 'crema-viso-luce');
-        const calmMask = allProducts.find((item) => item.slug === 'maschera-notte-calm');
+        const cleanser = pickByKeywords(/clean|wash|deterg|gentle|delicate/i, 0);
+        const toner = pickByKeywords(/tonic|toner|mist/i, 1);
+        const serum = pickByKeywords(/serum|siero|essence|repair/i, 2);
+        const glowPick = pickByKeywords(/glow|bright|radiance|vitamin/i, 3);
+        const calmPick = pickByKeywords(/calm|soothe|sensitive|lenit|repair/i, 4);
+        const hydrationPick = pickByKeywords(/hydr|hyal|moist|comfort/i, 5);
+        const richPick = pickByKeywords(/rich|cream|crema|body|butter/i, 6);
 
-        const morning = [cleanser, toner, goal === 'luminosita' ? glowCream : serum].filter(Boolean);
-        const evening = [cleanser, goal === 'lenitivo' || skin === 'sensibile' ? calmMask : serum, texture === 'ricca' ? glowCream : toner].filter(Boolean);
+        const focusPick = goal === 'lenitivo' || skin === 'sensibile' ? calmPick : goal === 'luminosita' ? glowPick : hydrationPick;
+        const morning = [cleanser, toner, goal === 'luminosita' ? focusPick : serum].filter(Boolean);
+        const evening = [cleanser, goal === 'lenitivo' || skin === 'sensibile' ? calmPick : serum, texture === 'ricca' ? richPick : toner].filter(Boolean);
 
-        const bundle = [morning[0], morning[2], evening[1]].filter(Boolean);
+        const bundle = [morning[0], morning[2], evening[1]]
+          .filter(Boolean)
+          .filter((item, index, array) => array.findIndex((candidate) => candidate.slug === item.slug) === index);
 
         const sensitiveAlt = allProducts.filter((item) => fragranceFree(item)).slice(0, 3);
         const veganAlt = allProducts.filter((item) => veganFriendly(item)).slice(0, 3);
@@ -382,9 +392,16 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
       const aiKey = 'shop-ai-preferences';
 
       const recommendByConcern = (concern) => {
-        if (concern === 'calm') return ['detergente-delicato', 'maschera-notte-calm', 'tonico-rose-balance'];
-        if (concern === 'hydration') return ['siero-ialuronico', 'crema-viso-luce', 'burro-corpo-seta'];
-        return ['crema-viso-luce', 'siero-ialuronico', 'tonico-rose-balance'];
+        const concernRegex = concern === 'calm' ? /calm|soothe|sensitive|repair|gentle|delicate/i : concern === 'hydration' ? /hydr|hyal|moist|comfort/i : /glow|bright|radiance|vitamin/i;
+        const matches = allProducts.filter((item) => keywordMatch(item, concernRegex));
+        const uniques = [...matches];
+
+        allProducts.forEach((item) => {
+          if (uniques.length >= 3) return;
+          if (!uniques.some((candidate) => candidate.slug === item.slug)) uniques.push(item);
+        });
+
+        return uniques.slice(0, 3);
       };
 
       const readSavedPrefs = () => {
@@ -424,8 +441,9 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
 
           savePrefs({ concern, finish, avoid });
 
-          let picks = recommendByConcern(concern).map((slug) => bySlug(slug)).filter(Boolean);
+          let picks = recommendByConcern(concern);
           if (avoid === 'fragrance') picks = picks.filter((item) => fragranceFree(item));
+          if (!picks.length) picks = allProducts.slice(0, 3);
           picks = picks.slice(0, 3);
 
           const reasons = {
