@@ -10,133 +10,308 @@ export const getStaticPaths = async () => {
   return products.map((product) => ({ params: { slug: product.slug }, props: { product } }));
 };
 const { product } = Astro.props;
-
-const clips = [
-  {
-    title: 'Test texture',
-    duration: '12s',
-    poster: 'https://images.pexels.com/videos/8996176/free-video-8996176.jpg?fit=crop&w=900&h=1600&auto=compress&cs=tinysrgb',
-    source: 'https://videos.pexels.com/video-files/8996176/8996176-hd_1080_1920_25fps.mp4'
-  },
-  {
-    title: 'Applicazione reale',
-    duration: '18s',
-    poster: 'https://images.pexels.com/videos/5927886/free-video-5927886.jpg?fit=crop&w=900&h=1600&auto=compress&cs=tinysrgb',
-    source: 'https://videos.pexels.com/video-files/5927886/5927886-hd_1920_1080_25fps.mp4'
-  },
-  {
-    title: 'Prima e dopo',
-    duration: '22s',
-    poster: 'https://images.pexels.com/videos/7305916/free-video-7305916.jpg?fit=crop&w=900&h=1600&auto=compress&cs=tinysrgb',
-    source: 'https://videos.pexels.com/video-files/7305916/7305916-uhd_4096_2160_25fps.mp4'
-  }
+const isShopifyProduct = product.source === 'shopify';
+const rawDescription =
+  isShopifyProduct && product.shortDescription.trim() !== 'Descrizione non disponibile.'
+    ? product.shortDescription
+    : '';
+const rawDescriptionHtml = isShopifyProduct ? product.descriptionHtml.trim() : '';
+const productVideos = product.source === 'shopify' ? product.videos : [];
+const galleryImages = product.source === 'shopify' ? product.galleryImages : [];
+const mediaThumbFallback = galleryImages[0]?.url || product.image;
+const mediaSlides = [
+  ...galleryImages.map((image, index) => ({
+    mediaType: 'image' as const,
+    url: image.url,
+    altText: image.altText || `${product.name} immagine ${index + 1}`,
+    width: image.width ?? 1200,
+    height: image.height ?? 1500,
+    thumbUrl: image.url,
+    thumbLabel: `Immagine ${index + 1}`,
+    thumbType: 'IMG'
+  })),
+  ...productVideos.map((video, index) => ({
+    mediaType: 'video' as const,
+    videoKind: video.kind,
+    url: video.url,
+    altText: video.altText || `${product.name} video ${index + 1}`,
+    poster: video.poster || mediaThumbFallback,
+    mimeType: video.kind === 'hosted' ? video.mimeType ?? 'video/mp4' : undefined,
+    thumbUrl: video.poster || mediaThumbFallback,
+    thumbLabel: `Video ${index + 1}`,
+    thumbType: 'VIDEO'
+  }))
 ];
+const hasMedia = mediaSlides.length > 0;
+const decodeHtmlEntities = (value: string) =>
+  value
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&apos;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>');
 
-const ugcItems = [
-  {
-    author: 'Chiara, 29',
-    skin: 'sensibile',
-    tone: 'chiaro',
-    finish: 'natural',
-    note: 'Texture leggera e assorbimento rapido nella routine del mattino.',
-    image: 'https://images.pexels.com/photos/7143283/pexels-photo-7143283.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=900&h=1200'
-  },
-  {
-    author: 'Marta, 34',
-    skin: 'mista',
-    tone: 'medio',
-    finish: 'dewy',
-    note: 'Luminosita graduale in 2 settimane di utilizzo costante (esperienza demo).',
-    image: 'https://images.pexels.com/photos/3851790/pexels-photo-3851790.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=900&h=1200'
-  },
-  {
-    author: 'Elisa, 41',
-    skin: 'secca',
-    tone: 'olivastro',
-    finish: 'rich',
-    note: 'Comfort serale elevato senza sensazione di pelle che tira.',
-    image: 'https://images.pexels.com/photos/3212179/pexels-photo-3212179.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=900&h=1200'
-  },
-  {
-    author: 'Sara, 26',
-    skin: 'sensibile',
-    tone: 'medio',
-    finish: 'light',
-    note: 'Buona base prima del make-up con finish stabile.',
-    image: 'https://images.pexels.com/photos/6663374/pexels-photo-6663374.jpeg?auto=compress&cs=tinysrgb&fit=crop&w=900&h=1200'
-  }
-];
+const normalizeSectionText = (value: string) =>
+  decodeHtmlEntities(value)
+    .replace(/\u00a0/g, ' ')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n[ \t]+/g, '\n')
+    .replace(/[ \t]{2,}/g, ' ')
+    .trim();
+
+const splitTextIntoSections = (value: string) =>
+  normalizeSectionText(value)
+    .split(/\r?\n\s*\r?\n+/)
+    .map((section) => section.split(/\r?\n+/).map((line) => line.trim()).filter(Boolean))
+    .filter((section) => section.length > 0);
+
+const splitHtmlIntoSections = (value: string) => {
+  if (!value.trim()) return [];
+
+  const normalized = normalizeSectionText(
+    value
+      .replace(/<\s*br\s*\/?>/gi, '\n')
+      .replace(/<li\b[^>]*>/gi, '- ')
+      .replace(/<\/li>/gi, '\n')
+      .replace(/<\/(p|div|section|article|blockquote|h1|h2|h3|h4|h5|h6|ul|ol)>/gi, '\n\n')
+      .replace(/<[^>]+>/g, '')
+  );
+
+  return splitTextIntoSections(normalized);
+};
+
+const descriptionSections = splitHtmlIntoSections(rawDescriptionHtml);
+const resolvedDescriptionSections = descriptionSections.length ? descriptionSections : splitTextIntoSections(rawDescription);
+const reviewStartRegex = /^\s*\{?\s*"?nome"?\s*:/i;
+const reviewFieldRegex = /^"?([^":]+)"?\s*:\s*(.+)$/;
+const reviewFieldGlobalRegex = /"?([^":]+)"?\s*:\s*("(?:[^"\\]|\\.)*"|[^,;]+)(?:[,;]|$)/g;
+
+type ReviewCard = {
+  name: string;
+  body: string[];
+  rating?: string;
+  meta: string[];
+};
+
+const cleanReviewValue = (value: string) =>
+  value
+    .trim()
+    .replace(/^[,;]+|[,;]+$/g, '')
+    .replace(/^"(.*)"$/, '$1')
+    .trim();
+
+const parseReviewBlock = (lines: string[]): ReviewCard | null => {
+  const fields = new Map<string, string>();
+  const looseLines: string[] = [];
+
+  lines.forEach((line) => {
+    let matchedInlineField = false;
+    reviewFieldGlobalRegex.lastIndex = 0;
+    const compactLine = line.replace(/[{}]/g, ' ').trim();
+
+    for (const match of compactLine.matchAll(reviewFieldGlobalRegex)) {
+      const key = match[1].trim().toLowerCase();
+      const value = cleanReviewValue(match[2]);
+      if (!value) continue;
+      fields.set(key, value);
+      matchedInlineField = true;
+    }
+
+    if (matchedInlineField) return;
+
+    const match = line.match(reviewFieldRegex);
+    if (!match) {
+      if (line.trim()) looseLines.push(line.trim());
+      return;
+    }
+
+    const key = match[1].trim().toLowerCase();
+    const value = cleanReviewValue(match[2]);
+    if (!value) return;
+    fields.set(key, value);
+  });
+
+  const name = fields.get('nome');
+  if (!name) return null;
+
+  const body = [fields.get('recensione'), fields.get('testo'), fields.get('commento'), ...looseLines].filter(
+    (value): value is string => Boolean(value && value.trim())
+  );
+  const meta = Array.from(fields.entries())
+    .filter(([key]) => !['nome', 'recensione', 'testo', 'commento', 'voto', 'rating', 'stelle'].includes(key))
+    .map(([key, value]) => `${key}: ${value}`);
+  const rating = fields.get('voto') ?? fields.get('rating') ?? fields.get('stelle') ?? undefined;
+
+  return {
+    name,
+    body,
+    rating,
+    meta
+  };
+};
+
+const partitionSections = (sections: string[][]) => {
+  const description: string[][] = [];
+  const reviews: ReviewCard[] = [];
+
+  sections.forEach((section) => {
+    if (!section.length) return;
+
+    let currentDescription: string[] = [];
+    let currentReviewLines: string[] = [];
+
+    const flushDescription = () => {
+      if (currentDescription.length) {
+        description.push([...currentDescription]);
+        currentDescription = [];
+      }
+    };
+
+    const flushReview = () => {
+      if (!currentReviewLines.length) return;
+      const parsed = parseReviewBlock(currentReviewLines);
+      if (parsed) reviews.push(parsed);
+      else description.push([...currentReviewLines]);
+      currentReviewLines = [];
+    };
+
+    section.forEach((line) => {
+      if (reviewStartRegex.test(line)) {
+        flushDescription();
+        flushReview();
+        currentReviewLines = [line];
+        return;
+      }
+
+      if (currentReviewLines.length) {
+        currentReviewLines.push(line);
+        return;
+      }
+
+      currentDescription.push(line);
+    });
+
+    flushDescription();
+    flushReview();
+  });
+
+  return { description, reviews };
+};
+
+const { description: contentSections, reviews } = partitionSections(resolvedDescriptionSections);
+const summarySection = contentSections[0] ?? [];
+const descriptionCardSections = contentSections.slice(1);
+const inlineSummarySection = summarySection;
+const seoDescription = summarySection.join(' ') || product.name;
+const pdpTopClassName = ['section container shop-pdp-top', !hasMedia && 'shop-pdp-top--single']
+  .filter(Boolean)
+  .join(' ');
+const stickyWrapClassName = ['shop-sticky-wrap', 'shop-sticky-wrap--compact'].join(' ');
 ---
-<MainLayout footerHtml={shopFooterHtml} template="shop" title={`${product.name} | Lifestyle & Beauty`} description={`${product.shortDescription} Scopri dettagli formula, utilizzo e varianti.`}>
+<MainLayout footerHtml={shopFooterHtml} template="shop" title={`${product.name} | Lifestyle & Beauty`} description={seoDescription}>
   <div class="shop-page">
-    <section class="section container shop-pdp-top" data-reveal>
-      <div class="shop-pdp-media-stack">
-        <div class="shop-video-grid" aria-label="Video corti shoppable" data-reveal>
-          {clips.map((clip, index) => (
-            <article class="card shop-video-card">
-              <video controls playsinline preload="metadata" poster={clip.poster}>
-                <source src={clip.source} type="video/mp4" />
-              </video>
-              <div class="shop-video-meta">
-                <p><strong>{clip.title}</strong> · {clip.duration}</p>
-                <button class="btn btn--ghost" type="button" data-pdp-add data-variant={`Clip ${index + 1}`}>Acquista da questo clip</button>
-              </div>
-            </article>
-          ))}
+    <section class={pdpTopClassName} data-reveal>
+      {hasMedia ? (
+        <div class="shop-pdp-media-stack">
+          <article class="card shop-gallery-panel shop-media-carousel" data-gallery data-reveal tabindex="0">
+            <div class="shop-media-head">
+              <p class="eyebrow">Media</p>
+              <h2>Immagini e video prodotto</h2>
+            </div>
+
+            <div class="shop-gallery-stage">
+              {mediaSlides.map((slide, index) => (
+                <figure
+                  class:list={[
+                    'shop-gallery-slide',
+                    slide.mediaType === 'video' && 'shop-gallery-slide--video',
+                    index === 0 && 'is-active'
+                  ]}
+                  data-gallery-slide
+                  data-gallery-index={String(index)}
+                  aria-hidden={index === 0 ? 'false' : 'true'}
+                  hidden={index !== 0}
+                >
+                  {slide.mediaType === 'image' ? (
+                    <img
+                      src={slide.url}
+                      alt={slide.altText}
+                      width={slide.width}
+                      height={slide.height}
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
+                    />
+                  ) : slide.videoKind === 'hosted' ? (
+                    <video controls playsinline preload="metadata" poster={slide.poster}>
+                      <source src={slide.url} type={slide.mimeType} />
+                    </video>
+                  ) : (
+                    <iframe
+                      src={slide.url}
+                      title={slide.altText}
+                      loading="lazy"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowfullscreen
+                    ></iframe>
+                  )}
+                </figure>
+              ))}
+            </div>
+
+            {mediaSlides.length > 1 ? (
+              <>
+                <div class="shop-gallery-toolbar">
+                  <p class="shop-gallery-count" data-gallery-count>1 / {mediaSlides.length}</p>
+                  <div class="shop-gallery-actions">
+                    <button class="btn btn--ghost shop-gallery-nav" type="button" data-gallery-prev aria-label="Media precedente">Prec</button>
+                    <button class="btn btn--ghost shop-gallery-nav" type="button" data-gallery-next aria-label="Media successivo">Succ</button>
+                  </div>
+                </div>
+
+                <div class="shop-gallery-thumbs" aria-label="Anteprime media prodotto">
+                  {mediaSlides.map((slide, index) => (
+                    <button
+                      class="shop-gallery-thumb"
+                      type="button"
+                      data-gallery-thumb
+                      data-gallery-index={String(index)}
+                      aria-label={`Apri ${slide.thumbLabel.toLowerCase()}`}
+                      aria-pressed={index === 0 ? 'true' : 'false'}
+                    >
+                      <span class="shop-gallery-thumb-media">
+                        <img
+                          src={slide.thumbUrl}
+                          alt=""
+                          width="160"
+                          height="160"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <span class="shop-gallery-thumb-type">{slide.thumbType}</span>
+                      </span>
+                      <span class="shop-gallery-thumb-label">{slide.thumbLabel}</span>
+                    </button>
+                  ))}
+                </div>
+              </>
+            ) : null}
+          </article>
         </div>
-
-        <article class="card shop-ugc-inline" data-reveal>
-          <div class="shop-ugc-head">
-            <p class="eyebrow">UGC in evidenza</p>
-            <h2>Filtra per tipo di pelle, tono e finitura</h2>
-          </div>
-
-          <div class="shop-ugc-filters" role="group" aria-label="Filtri UGC rapidi">
-            <button class="btn btn--ghost" type="button" data-ugc-filter="all" aria-pressed="true" aria-controls="shop-ugc-grid">Tutti</button>
-            <button class="btn btn--ghost" type="button" data-ugc-filter="sensibile" aria-pressed="false" aria-controls="shop-ugc-grid">Pelle sensibile</button>
-            <button class="btn btn--ghost" type="button" data-ugc-filter="dewy" aria-pressed="false" aria-controls="shop-ugc-grid">Finitura luminosa</button>
-            <button class="btn btn--ghost" type="button" data-ugc-filter="chiaro" aria-pressed="false" aria-controls="shop-ugc-grid">Tono chiaro</button>
-          </div>
-
-          <div class="shop-ugc-grid" id="shop-ugc-grid">
-            {ugcItems.map((ugc) => (
-              <article class="shop-ugc-card" data-ugc-card data-skin={ugc.skin} data-tone={ugc.tone} data-finish={ugc.finish}>
-                <img src={ugc.image} alt={`UGC ${ugc.author}`} width="900" height="1200" loading="lazy" decoding="async" />
-                <p><strong>{ugc.author}</strong></p>
-                <p class="muted">{ugc.note}</p>
-              </article>
-            ))}
-          </div>
-        </article>
-      </div>
+      ) : null}
 
       <article class="card shop-pdp-buy" data-reveal>
-        <p class="eyebrow">As seen on social</p>
-        <p class="muted">TikTok Shop · Instagram Shop · Pinterest Product Pins</p>
+        {isShopifyProduct && product.category ? <p class="eyebrow">{product.category}</p> : null}
         <h1>{product.name}</h1>
-        <p>{product.shortDescription}</p>
-
-        <div class="shop-result-timing">
-          <p><strong>Risultati tipici (demo):</strong> sensazione di comfort immediata e miglioramento progressivo in 7-14 giorni di uso costante.</p>
-          <p class="muted">Tempistiche realistiche: i risultati variano in base a routine, costanza e tipo di pelle.</p>
-        </div>
+        {inlineSummarySection.map((line) => <p>{line}</p>)}
 
         <p><strong>EUR {product.price.toFixed(2)}</strong></p>
-
-        <label for="detail-shade">
-          Variante
-          <select id="detail-shade" name="shade">
-            <option value="Original">Original</option>
-            <option value="Light">Light</option>
-            <option value="Rich">Rich</option>
-          </select>
-        </label>
 
         <div class="hero-actions">
           <button
             class="btn"
             id="detail-add"
-            data-product={JSON.stringify(product)}
             data-slug={product.slug}
             data-name={product.name}
             data-price={String(product.price)}
@@ -153,89 +328,59 @@ const ugcItems = [
           {product.variantId ? <BuyNowButton variantId={product.variantId} className="btn btn--ghost" /> : <a class="btn btn--ghost" href="/shop/cart">Vai al carrello</a>}
         </div>
 
-        <div class="shop-express-row" aria-label="Metodi pagamento express demo">
-          <button type="button" class="btn btn--ghost">Apple Pay</button>
-          <button type="button" class="btn btn--ghost">Google Pay</button>
-          <button type="button" class="btn btn--ghost">PayPal</button>
-        </div>
-
-        <p class="shop-delivery-line">Spedizione demo 48-72h · Reso demo 30 giorni · Tracking incluso.</p>
         <p id="detail-status" class="wizard-status" aria-live="polite"></p>
       </article>
     </section>
 
-    <section class="section container" data-reveal>
-      <div class="section-head">
-        <p class="eyebrow">Trasparenza formula</p>
-        <h2>Ingredienti spiegati in modo semplice</h2>
-        <p class="section-intro">Per ogni prodotto: funzione principale, destinatari e indicazioni di attenzione. Badge sobri, niente parete di icone.</p>
-      </div>
+    {descriptionCardSections.length ? (
+      <section class="section container" data-reveal>
+        <div class="shop-description-grid">
+          {descriptionCardSections.map((section) => (
+            <article class="card shop-description-card" data-reveal>
+              {section.map((line) => <p>{line}</p>)}
+            </article>
+          ))}
+        </div>
+      </section>
+    ) : null}
 
-      <div class="shop-cleanlab-grid">
-        <article class="card" data-reveal>
-          <h3>Cosa fa</h3>
-          <p>{product.shortDescription}</p>
-          <p class="muted">Beneficio principale orientato a comfort e continuita nella routine quotidiana.</p>
-        </article>
+    {reviews.length ? (
+      <section class="section container" data-reveal>
+        <div class="section-head">
+          <p class="eyebrow">Recensioni</p>
+          <h2>Recensioni recuperate da Shopify</h2>
+        </div>
 
-        <article class="card" data-reveal>
-          <h3>Per chi</h3>
-          <ul>
-            <li>Pelli da normali a sensibili (consigliata verifica personale).</li>
-            <li>Routine mattina e sera con applicazione graduale.</li>
-            <li>Chi cerca un risultato progressivo e non invasivo.</li>
-          </ul>
-        </article>
-
-        <article class="card" data-reveal>
-          <h3>Cosa evitare / attenzione</h3>
-          <ul>
-            <li>Controllare sempre l INCI completo prima dell uso.</li>
-            <li>Su pelle reattiva e consigliato un patch test preliminare.</li>
-            <li>In gravidanza/allattamento, valutare con un professionista se necessario.</li>
-          </ul>
-        </article>
-      </div>
-
-      <article class="card card--soft" data-reveal>
-        <h3>INCI completo</h3>
-        <p>{product.inci}</p>
-      </article>
-    </section>
-
-    <section class="section container" data-reveal>
-      <div class="section-head">
-        <p class="eyebrow">Prove e credibilita</p>
-        <h2>Claim con fonte e contesto</h2>
-      </div>
-
-      <div class="shop-proof-grid">
-        <article class="card" data-reveal>
-          <p><strong>Claim:</strong> Tra le formule piu scelte per routine glow (dato demo).</p>
-          <p><strong>Fonte:</strong> panel interno e-commerce demo.</p>
-          <p class="muted">Nota: metrica non clinica, basata su acquisto e feedback utente.</p>
-        </article>
-        <article class="card" data-reveal>
-          <p><strong>Claim:</strong> Buona tollerabilita percepita su pelle sensibile (dato demo).</p>
-          <p><strong>Fonte:</strong> survey post-acquisto con filtri tipo pelle.</p>
-          <p class="muted">Nota: la risposta individuale puo variare.</p>
-        </article>
-      </div>
-    </section>
+        <div class="shop-reviews-grid">
+          {reviews.map((review) => (
+            <article class="card shop-review-card" data-reveal>
+              <div class="shop-review-head">
+                <div class="shop-review-author">
+                  <div class="shop-review-avatar" aria-hidden="true">
+                    {review.name.slice(0, 1).toUpperCase()}
+                  </div>
+                  <div class="shop-review-author-copy">
+                    <h3>{review.name}</h3>
+                    {review.meta.length ? <p class="muted shop-review-meta">{review.meta.join(' · ')}</p> : null}
+                  </div>
+                </div>
+                {review.rating ? <p class="shop-review-rating">{review.rating}</p> : null}
+              </div>
+              <div class="shop-review-body">
+                {review.body.map((line) => (
+                  <p>{line}</p>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    ) : null}
   </div>
 
   <div class="shop-sticky-atc" role="region" aria-label="Aggiungi al carrello rapido">
-    <div class="shop-sticky-wrap">
-      <label for="sticky-shade" class="shop-sticky-label">
-        Shade
-        <select id="sticky-shade" name="stickyShade">
-          <option value="Original">Original</option>
-          <option value="Light">Light</option>
-          <option value="Rich">Rich</option>
-        </select>
-      </label>
+    <div class={stickyWrapClassName}>
       <button class="btn" id="sticky-add" type="button">Aggiungi</button>
-      <p class="shop-sticky-note">Spedizione demo 48-72h · Reso 30 giorni</p>
     </div>
   </div>
 
@@ -244,8 +389,6 @@ const ugcItems = [
     (() => {
       const productButton = document.getElementById('detail-add');
       const stickyButton = document.getElementById('sticky-add');
-      const detailShade = document.getElementById('detail-shade');
-      const stickyShade = document.getElementById('sticky-shade');
       const status = document.getElementById('detail-status');
       const ensureCartApi = () => {
         if (window.shopCart && typeof window.shopCart.addToCart === 'function') return window.shopCart;
@@ -296,26 +439,14 @@ const ugcItems = [
         };
       };
 
-      const syncShades = (source, target) => {
-        if (!(source instanceof HTMLSelectElement) || !(target instanceof HTMLSelectElement)) return;
-        target.value = source.value;
-      };
-
-      if (detailShade instanceof HTMLSelectElement && stickyShade instanceof HTMLSelectElement) {
-        detailShade.addEventListener('change', () => syncShades(detailShade, stickyShade));
-        stickyShade.addEventListener('change', () => syncShades(stickyShade, detailShade));
-      }
-
-      const addCurrentProduct = (variant = '') => {
+      const addCurrentProduct = () => {
         if (!(productButton instanceof HTMLButtonElement)) return;
 
         try {
           const payload = parsePayload(productButton);
           if (!payload) throw new Error('Invalid product payload');
-          const shade = detailShade instanceof HTMLSelectElement ? detailShade.value : 'Original';
-          const finalVariant = variant || shade;
-          ensureCartApi().addToCart({ ...payload, variant: finalVariant });
-          if (status) status.textContent = `${payload.name} · ${finalVariant} aggiunto al carrello (demo).`;
+          ensureCartApi().addToCart(payload);
+          if (status) status.textContent = `${payload.name} aggiunto al carrello.`;
         } catch {
           if (status) status.textContent = 'Errore: impossibile aggiungere il prodotto al carrello.';
         }
@@ -324,32 +455,62 @@ const ugcItems = [
       productButton?.addEventListener('click', () => addCurrentProduct());
       stickyButton?.addEventListener('click', () => addCurrentProduct());
 
-      document.querySelectorAll('[data-pdp-add]').forEach((button) => {
-        if (!(button instanceof HTMLButtonElement)) return;
-        button.addEventListener('click', () => addCurrentProduct(button.dataset.variant || 'Clip pick'));
-      });
+      const galleryRoot = document.querySelector('[data-gallery]');
+      if (galleryRoot instanceof HTMLElement) {
+        const slides = Array.from(galleryRoot.querySelectorAll('[data-gallery-slide]'));
+        const thumbs = Array.from(galleryRoot.querySelectorAll('[data-gallery-thumb]'));
+        const prevButton = galleryRoot.querySelector('[data-gallery-prev]');
+        const nextButton = galleryRoot.querySelector('[data-gallery-next]');
+        const counter = galleryRoot.querySelector('[data-gallery-count]');
+        let currentIndex = 0;
 
-      const ugcButtons = Array.from(document.querySelectorAll('[data-ugc-filter]'));
-      const ugcCards = Array.from(document.querySelectorAll('[data-ugc-card]'));
+        const renderGallery = (nextIndex) => {
+          if (!slides.length) return;
+          currentIndex = (nextIndex + slides.length) % slides.length;
 
-      ugcButtons.forEach((button) => {
-        if (!(button instanceof HTMLButtonElement)) return;
-        button.addEventListener('click', () => {
-          const filter = button.dataset.ugcFilter || 'all';
-          ugcButtons.forEach((item) => {
-            if (item instanceof HTMLButtonElement) item.setAttribute('aria-pressed', item === button ? 'true' : 'false');
+          slides.forEach((slide, index) => {
+            const isActive = index === currentIndex;
+            slide.toggleAttribute('hidden', !isActive);
+            slide.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+            slide.classList.toggle('is-active', isActive);
           });
-          ugcCards.forEach((card) => {
-            if (!(card instanceof HTMLElement)) return;
-            if (filter === 'all') {
-              card.hidden = false;
-              return;
+
+          thumbs.forEach((thumb, index) => {
+            if (thumb instanceof HTMLButtonElement) {
+              thumb.setAttribute('aria-pressed', index === currentIndex ? 'true' : 'false');
             }
-            const match = [card.dataset.skin, card.dataset.tone, card.dataset.finish].includes(filter);
-            card.hidden = !match;
           });
+
+          if (counter) counter.textContent = `${currentIndex + 1} / ${slides.length}`;
+        };
+
+        if (prevButton instanceof HTMLButtonElement) {
+          prevButton.addEventListener('click', () => renderGallery(currentIndex - 1));
+        }
+
+        if (nextButton instanceof HTMLButtonElement) {
+          nextButton.addEventListener('click', () => renderGallery(currentIndex + 1));
+        }
+
+        thumbs.forEach((thumb, index) => {
+          if (!(thumb instanceof HTMLButtonElement)) return;
+          thumb.addEventListener('click', () => renderGallery(index));
         });
-      });
+
+        galleryRoot.addEventListener('keydown', (event) => {
+          if (!(event instanceof KeyboardEvent)) return;
+          if (event.key === 'ArrowLeft') {
+            event.preventDefault();
+            renderGallery(currentIndex - 1);
+          }
+          if (event.key === 'ArrowRight') {
+            event.preventDefault();
+            renderGallery(currentIndex + 1);
+          }
+        });
+
+        renderGallery(0);
+      }
     })();
   </script>
 </MainLayout>

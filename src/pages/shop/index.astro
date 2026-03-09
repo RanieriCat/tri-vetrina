@@ -7,6 +7,17 @@ import { shopFooterHtml } from '@/config/shop';
 
 const products = await getShopProducts({ first: 24 });
 const featured = products.slice(0, 6);
+const clientProducts = products.map((product) => ({
+  slug: product.slug,
+  name: product.name,
+  price: product.price,
+  category: product.category,
+  image: product.image,
+  shortDescription: product.shortDescription,
+  inci: product.inci,
+  variantId: product.variantId,
+  variantTitle: product.variantTitle
+}));
 const dropDateISO = '2026-04-30T20:00:00+02:00';
 ---
 <MainLayout footerHtml={shopFooterHtml} template="shop" title="Lifestyle & Beauty" description="Skincare guidata con quiz routine, consigli personalizzati e acquisto rapido.">
@@ -244,7 +255,7 @@ const dropDateISO = '2026-04-30T20:00:00+02:00';
   </div>
 
   <script is:inline set:html={cartScript}></script>
-  <script is:inline define:vars={{ products, dropDateISO }}>
+  <script is:inline define:vars={{ products: clientProducts, dropDateISO }}>
     (() => {
       const allProducts = Array.isArray(products) ? products : [];
       const bySlug = (slug) => allProducts.find((item) => item.slug === slug);

@@ -1,3 +1,26 @@
+export type ProductImage = {
+  url: string;
+  altText: string;
+  width?: number;
+  height?: number;
+};
+
+export type ProductVideo =
+  | {
+      kind: 'hosted';
+      url: string;
+      altText: string;
+      poster?: string;
+      mimeType?: string;
+    }
+  | {
+      kind: 'external';
+      url: string;
+      altText: string;
+      poster?: string;
+      host?: string;
+    };
+
 export type Product = {
   slug: string;
   name: string;
@@ -5,12 +28,18 @@ export type Product = {
   category: string;
   image: string;
   shortDescription: string;
+  descriptionHtml: string;
   inci: string;
+  source: 'shopify' | 'fallback';
+  galleryImages: ProductImage[];
+  videos: ProductVideo[];
   variantId?: string;
   variantTitle?: string;
 };
 
-export const products: Product[] = [
+type FallbackProduct = Omit<Product, 'source' | 'galleryImages' | 'videos' | 'descriptionHtml'>;
+
+const fallbackProducts: FallbackProduct[] = [
   {
     slug: 'crema-viso-luce',
     name: 'Crema Viso Luce',
@@ -102,4 +131,12 @@ export const products: Product[] = [
     inci: 'Cera Alba, Ricinus Communis Seed Oil, Shea Butter.'
   }
 ];
+
+export const products: Product[] = fallbackProducts.map((product) => ({
+  ...product,
+  descriptionHtml: '',
+  source: 'fallback',
+  galleryImages: [],
+  videos: []
+}));
 

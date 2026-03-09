@@ -1,4 +1,9 @@
-import { products as fallbackProducts, type Product } from '@/data/products';
+import {
+  products as fallbackProducts,
+  type Product,
+  type ProductImage,
+  type ProductVideo
+} from '@/data/products';
 
 export type ShopifyConfig = {
   storeDomain: string;
@@ -36,15 +41,45 @@ type CheckoutLine = {
   quantity?: number;
 };
 
+type ShopifyImageNode = {
+  url: string;
+  altText: string | null;
+  width?: number | null;
+  height?: number | null;
+};
+
+type ShopifyVideoSource = {
+  url: string;
+  mimeType: string | null;
+  format?: string | null;
+  height?: number | null;
+  width?: number | null;
+};
+
+type ShopifyMediaNode = {
+  mediaContentType?: string | null;
+  alt?: string | null;
+  image?: ShopifyImageNode | null;
+  previewImage?: ShopifyImageNode | null;
+  sources?: ShopifyVideoSource[] | null;
+  embeddedUrl?: string | null;
+  host?: string | null;
+  originUrl?: string | null;
+};
+
 type ShopifyProductNode = {
   id: string;
   title: string;
   handle: string;
   description: string;
+  descriptionHtml?: string | null;
   productType: string;
-  featuredImage: {
-    url: string;
-    altText: string | null;
+  featuredImage: ShopifyImageNode | null;
+  images?: {
+    nodes: ShopifyImageNode[];
+  } | null;
+  media?: {
+    nodes: ShopifyMediaNode[];
   } | null;
   priceRange: {
     minVariantPrice: {
@@ -87,6 +122,118 @@ type CartLinesAddData = {
 const DEFAULT_FIRST = 24;
 const SHOPIFY_CART_STORAGE_KEY = 'shopify_cart_id';
 const productsCache = new Map<number, Promise<Product[]>>();
+const PRODUCTS_QUERY_WITH_MEDIA = `
+  query Products($first: Int!) {
+    products(first: $first) {
+      nodes {
+        id
+        title
+        handle
+        description
+        descriptionHtml
+        productType
+        featuredImage {
+          url
+          altText
+          width
+          height
+        }
+        images(first: 8) {
+          nodes {
+            url
+            altText
+            width
+            height
+          }
+        }
+        media(first: 8) {
+          nodes {
+            mediaContentType
+            alt
+            ... on MediaImage {
+              image {
+                url
+                altText
+                width
+                height
+              }
+            }
+            ... on Video {
+              previewImage {
+                url
+                altText
+                width
+                height
+              }
+              sources {
+                url
+                mimeType
+                format
+                height
+                width
+              }
+            }
+            ... on ExternalVideo {
+              embeddedUrl
+              host
+              originUrl
+              previewImage {
+                url
+                altText
+                width
+                height
+              }
+            }
+          }
+        }
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        variants(first: 1) {
+          nodes {
+            id
+            title
+          }
+        }
+      }
+    }
+  }
+`;
+const PRODUCTS_QUERY_BASIC = `
+  query Products($first: Int!) {
+    products(first: $first) {
+      nodes {
+        id
+        title
+        handle
+        description
+        descriptionHtml
+        productType
+        featuredImage {
+          url
+          altText
+          width
+          height
+        }
+        priceRange {
+          minVariantPrice {
+            amount
+            currencyCode
+          }
+        }
+        variants(first: 1) {
+          nodes {
+            id
+            title
+          }
+        }
+      }
+    }
+  }
+`;
 
 const fallbackSlice = (first: number) => fallbackProducts.slice(0, Math.min(first, fallbackProducts.length));
 
@@ -150,19 +297,97 @@ const assertNoUserErrors = (operation: string, userErrors: ShopifyUserError[]) =
   throw new Error(`[shopify] ${operation} userErrors: ${formatUserErrors(userErrors)}`);
 };
 
+const mapProductImage = (
+  image: ShopifyImageNode | null | undefined,
+  fallbackAltText: string
+): ProductImage | null => {
+  const url = image?.url?.trim();
+  if (!url) return null;
+
+  const altText = (image?.altText ?? fallbackAltText).trim() || fallbackAltText;
+
+  return {
+    url,
+    altText,
+    width: image?.width ?? undefined,
+    height: image?.height ?? undefined
+  };
+};
+
+const dedupeProductImages = (images: Array<ProductImage | null | undefined>) => {
+  const seen = new Set<string>();
+
+  return images.filter((image): image is ProductImage => {
+    if (!image?.url || seen.has(image.url)) return false;
+    seen.add(image.url);
+    return true;
+  });
+};
+
+const mapProductVideos = (node: ShopifyProductNode): ProductVideo[] =>
+  (node.media?.nodes ?? []).flatMap((mediaNode) => {
+    if (mediaNode.mediaContentType === 'VIDEO') {
+      const source =
+        mediaNode.sources?.find((candidate) => (candidate.mimeType ?? '').startsWith('video/')) ??
+        mediaNode.sources?.[0];
+
+      if (!source?.url) return [];
+
+      return [
+        {
+          kind: 'hosted',
+          url: source.url,
+          altText: (mediaNode.alt ?? mediaNode.previewImage?.altText ?? node.title).trim() || node.title,
+          poster: mediaNode.previewImage?.url ?? undefined,
+          mimeType: source.mimeType ?? undefined
+        }
+      ];
+    }
+
+    if (mediaNode.mediaContentType === 'EXTERNAL_VIDEO') {
+      const url = (mediaNode.embeddedUrl ?? mediaNode.originUrl ?? '').trim();
+      if (!url) return [];
+
+      return [
+        {
+          kind: 'external',
+          url,
+          altText: (mediaNode.alt ?? mediaNode.previewImage?.altText ?? node.title).trim() || node.title,
+          poster: mediaNode.previewImage?.url ?? undefined,
+          host: mediaNode.host ?? undefined
+        }
+      ];
+    }
+
+    return [];
+  });
+
 const mapShopifyProduct = (node: ShopifyProductNode): Product => {
   const parsedPrice = Number.parseFloat(node.priceRange?.minVariantPrice?.amount ?? '');
   const price = Number.isFinite(parsedPrice) ? parsedPrice : 0;
   const firstVariant = node.variants?.nodes?.[0];
+  const fallbackAltText = node.title?.trim() || 'Prodotto Shopify';
+  const featuredImage = mapProductImage(node.featuredImage, fallbackAltText);
+  const galleryImages = dedupeProductImages([
+    featuredImage,
+    ...(node.images?.nodes ?? []).map((imageNode) => mapProductImage(imageNode, fallbackAltText))
+  ]);
+  const videos = mapProductVideos(node);
 
   return {
     slug: node.handle,
     name: node.title,
     price,
     category: node.productType || 'Shopify',
-    image: node.featuredImage?.url || `https://picsum.photos/seed/shopify-${encodeURIComponent(node.handle || node.id)}/600/380`,
+    image:
+      featuredImage?.url ||
+      `https://picsum.photos/seed/shopify-${encodeURIComponent(node.handle || node.id)}/600/380`,
     shortDescription: node.description?.trim() || 'Descrizione non disponibile.',
+    descriptionHtml: node.descriptionHtml?.trim() || '',
     inci: 'INCI non disponibile nel feed Shopify corrente.',
+    source: 'shopify',
+    galleryImages,
+    videos,
     variantId: firstVariant?.id,
     variantTitle: firstVariant?.title
   };
@@ -389,39 +614,16 @@ export async function checkoutLocalCart(
 }
 
 const fetchShopifyProducts = async (first: number) => {
-  const data = await shopifyFetch<GetProductsData, { first: number }>(
-    `
-      query Products($first: Int!) {
-        products(first: $first) {
-          nodes {
-            id
-            title
-            handle
-            description
-            productType
-            featuredImage {
-              url
-              altText
-            }
-            priceRange {
-              minVariantPrice {
-                amount
-                currencyCode
-              }
-            }
-            variants(first: 1) {
-              nodes {
-                id
-                title
-              }
-            }
-          }
-        }
-      }
-    `,
-    { first }
-  );
+  let data: GetProductsData | null = null;
 
+  try {
+    data = await shopifyFetch<GetProductsData, { first: number }>(PRODUCTS_QUERY_WITH_MEDIA, { first });
+  } catch (error) {
+    console.warn('[shopify] Products media query failed. Retrying with basic query.', error);
+    data = await shopifyFetch<GetProductsData, { first: number }>(PRODUCTS_QUERY_BASIC, { first });
+  }
+
+  if (!data) return fallbackSlice(first);
   const nodes = data.products?.nodes;
   if (!Array.isArray(nodes) || nodes.length === 0) return fallbackSlice(first);
   return nodes.map(mapShopifyProduct);
